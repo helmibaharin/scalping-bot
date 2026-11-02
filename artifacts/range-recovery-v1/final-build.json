@@ -1,0 +1,161 @@
+{
+  "utc": "2026-11-02T05:00:07.371529+00:00",
+  "binary_sha256": "261c2cf65a35f72f077ac68d156f9693ccc95ace77532b19f29ef38985af6b9c",
+  "compile": "0 errors, 0 warnings",
+  "sources": [
+    {
+      "path": "MQL5/Experts/ScalpingBot.mq5",
+      "sha256": "f44b2b9647647cb1635b0398bdbd5a86beace7df54c75cecfcd7e490c72f38bc"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/BrokerTimeConfig.mqh",
+      "sha256": "58621f085934d5c283e89b01eaa2115b5c1f04134413f3b675c2f447e8232829"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/Config.mqh",
+      "sha256": "3d9bf42fb6c25737ce0e14f0825a817c06eb6b52a8ac6b4afa0400e9e6a2917b"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/Diagnostics.mqh",
+      "sha256": "bfd6057c2a2fe1059200bb6a57242ba48e05e22c174e83a5552436e1a5f3ebf1"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/FourHourBreakout.mqh",
+      "sha256": "c019d778fa69649f7dc64c2ff1ff656c9cc38a5642250a984257001560eed817"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/LiquiditySweep.mqh",
+      "sha256": "e73ce1e75a86205d03350194970b5182a05f6ac65193190818ea3fbf0ab41348"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/NewYorkTime.mqh",
+      "sha256": "f71bacb07350b403cd706809e766cab27f0b1c1df4c8a3fada37d9cca8df03d0"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/OpeningRangeBreakout.mqh",
+      "sha256": "74ce060a92aa5a68bff8c9e1c2392030069a93f855f6265d96436e366aa36bd2"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/ORBEngine.mqh",
+      "sha256": "6241cde443376785776cefb45f017123a87eede83c20f8d2aef7e58dc3ca2ee4"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/ORBExternal.mqh",
+      "sha256": "dbbad93830ad967a5d59cb316fea04da7f023a73d7eb0611c94da4e3d0d65d0e"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/ORBTypes.mqh",
+      "sha256": "603675a39e6e65a8f9cbd23083f61ee5545409964f489b93d70b57282aa36ec3"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/OrderBlockDetector.mqh",
+      "sha256": "e3b080612d2a66d64f6e28d7f391246ba1f97becd3a8b6e284b6663f675072c3"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/PositionManager.mqh",
+      "sha256": "30b1e45b77f387e43b8a2b7d93cd8907b32c92f4c1db80473e1173c9aaa09f05"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/ResistanceDetector.mqh",
+      "sha256": "bd25ce3dbd22537f043b5030f41d084d324bc8d0337648e48ec565b300323fe4"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/RiskManager.mqh",
+      "sha256": "12067fae62da07c3bd1e32f82b6dc1f49a223d325ac5678269f37104ceb428f7"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/Rules.mqh",
+      "sha256": "d186386c83a2441f225c0780c81b0286e7f9237cc939c36951cb772d16867c16"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/SessionRange.mqh",
+      "sha256": "ce38534f99d1c3a3fa5c986af0975fe36be87e4ae65ca550048bf707451d5d00"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/ShapeDetector.mqh",
+      "sha256": "b7920d2b7c23d91868385f40a6d4e87fe527e123a0562462feda8831fefe44c4"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/ShapeEngine.mqh",
+      "sha256": "5357be79e55e955301f80170437fc7921ab6aa3c3ab15cb924b8c146e17227b8"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/ShapeRuntime.mqh",
+      "sha256": "05e4635b8d4efdeebac9fbb93d892d394fbccc80944076ebf6c0ea25d9f414b3"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/ShapeTypes.mqh",
+      "sha256": "350c35b459c23720fc619a9ed12600eaaa9da1b17df0a87d410a6c549ccc13b6"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/SmartMoneyTrap.mqh",
+      "sha256": "665fa6cd2798dfade07b3af6dfa08fa52921e0a143f29ebc9d3714fcb570fdec"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/SMTContext.mqh",
+      "sha256": "b3b731602422d5331a914cfe8f42d9507a388d2a3e0963e401f025ee2960a972"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/SMTEngine.mqh",
+      "sha256": "808b5949ac7d4a71d5936067ee6ddb093c7974252712f95996584293a2e3032d"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/SMTLocations.mqh",
+      "sha256": "eec223bed570b591687e4904a3b13812befb2d270ceb50499ff46039d8d233bc"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/SMTTypes.mqh",
+      "sha256": "ef3ee8a59ea8c6b5f83cae22ccc826e729f741dbf25502375abe89ebf66477dd"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/StatePersistence.mqh",
+      "sha256": "a417ce17c9b89d73d16bab111cabaf1a49427f8873874d2750eddc8fa2fddbb0"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/StrategyInterface.mqh",
+      "sha256": "27dcf073fab0eb1f5bf6fc8225f2f4e9c4f4a99b5b3573a85180144c76ddf099"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/TradeExecutor.mqh",
+      "sha256": "a0833e8b752d9233d14998a14994146597cf3c4cd03519bee62a244aa54f28cd"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/TradeLedger.mqh",
+      "sha256": "5e52b307dcde214dc124e32091b0f4fa9359d44f9f284e1caae23c1707e0da5e"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/TriangleDetector.mqh",
+      "sha256": "3514a555448252c9d8f2807a196785e02ce1be8bfd083de75e26b63cc5338526"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/TriangleMethod.mqh",
+      "sha256": "bdeeedbf04a4ca375bd69cca5dedfebece263c2c68e06d2990884864c7f0c9f4"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/VolumeProfileDrawing.mqh",
+      "sha256": "bef33572a20d0540d8a9661a0d1a12660ac13e7760660eee099858ab0d6506fc"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/VolumeProfileEngine.mqh",
+      "sha256": "a613965df562ac12ec1c086d5204353351e33abba798f2811f1b3a2a5a4e04ee"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/VolumeProfileMethods.mqh",
+      "sha256": "1ea796cb1c0d679e86dbec078b59c10fa8b340405d388d0bef3c8cd8bbeebb91"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/VolumeProfilePolicy.mqh",
+      "sha256": "9c08ca96ebf25e80a749910f866f2ebcd8aaaa6ec5e838cc1741d7c7e7b5a4c0"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/VolumeProfileRuntime.mqh",
+      "sha256": "4ad6eae0523b08d444560b3889820ad1188c11f023c293017596a03b7236d004"
+    },
+    {
+      "path": "MQL5/Include/ScalpingBot/VolumeProfileSessions.mqh",
+      "sha256": "06f1e468ae0df3f681a83272459520ea22e95b74b4d000293b242cff6e690584"
+    }
+  ],
+  "native_test_matrix": "artifacts/range-recovery-v1/20261102T045719/matrix.json",
+  "validation_report": "docs/HISTORICAL_RANGE_RECOVERY.md"
+}

@@ -7,6 +7,11 @@ artifacts/daily-lock-v1/*
 !artifacts/daily-lock-v1/automated-tests.json
 !artifacts/daily-lock-v1/final-build.json
 !artifacts/daily-lock-v1/project-verification.json
+!artifacts/range-recovery-v1/
+artifacts/range-recovery-v1/*
+!artifacts/range-recovery-v1/final-build.json
+!artifacts/range-recovery-v1/project-verification.json
+!artifacts/range-recovery-v1/test-results.json
 **/__pycache__/
 *.pyc
 *.compile.log

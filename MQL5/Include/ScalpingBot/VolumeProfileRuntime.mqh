@@ -1,5 +1,6 @@
 #ifndef SB_VP_RUNTIME
 #define SB_VP_RUNTIME
+#include "VolumeProfileDrawing.mqh"
 SBVPCandidate sb_vp_methods[3];SBORBStructure sb_vp_structure;
 datetime sb_vp_last=0,sb_vp_context_last=0,sb_vp_load_retry=0;int sb_vp_context_trend=0;
 int sb_vp_signals=INVALID_HANDLE,sb_vp_profiles=INVALID_HANDLE;
@@ -21,7 +22,7 @@ void SBVPLogProfile()
   {
    SBVPProfile p=sb_vp_profile;
    if(sb_vp_profiles!=INVALID_HANDLE){FileWrite(sb_vp_profiles,(long)sb_vp_day,(long)p.day,(long)p.start,(long)p.end,p.id,_Symbol,"M1","TICK_VOLUME",p.bin,p.fraction,p.count,p.expected,p.coverage,p.volume,p.poc,p.vah,p.val,p.close,SBVPCloseLocation(p),p.quality,p.ties,p.center,p.reason);FileFlush(sb_vp_profiles);}
-   if(InpVPDrawObjects){SBHLine(SB_VP_POC,p.id+".POC",p.poc,clrOrange);SBHLine(SB_VP_REVERSAL,p.id+".VAH",p.vah,clrTomato);SBHLine(SB_VP_REVERSAL,p.id+".VAL",p.val,clrDodgerBlue);}
+   SBVPDrawProfile(true);
   }
 void SBVPTrace(SBVPCandidate &c,int previous,MqlRates &b,double atr,string status,string reason)
   {

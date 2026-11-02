@@ -1,0 +1,113 @@
+{
+  "status": "PASS",
+  "runs": [
+    {
+      "id": "range-recovery",
+      "status": "PASS",
+      "from_date": "2026.08.03",
+      "until_date_exclusive": "2026.08.04",
+      "model": "M1_OHLC",
+      "mapping_scope": "SYNTHETIC_FIXED_OR_EU_RULE_NOT_BROKER_VERIFICATION",
+      "binary_sha256": "e3aec44177d86b9de81c3cc6aa2a953493d892790050157fda9ec329ed52cff5",
+      "recoveries": [
+        "SCALPING BOT | S1_4H_BREAKOUT | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.08.03 11:01:00 UTC=2026.08.03 08:01:00 NY=2026.08.03 04:01:00 nyDate=2026.08.03 nyWindow=[2026.08.03 00:00,2026.08.03 04:00) brokerWindow=[2026.08.03 07:00,2026.08.03 11:00) offsets_minutes=180/180 verified=true M1=240/240 actual=240 high=4072.07000000 low=4051.92000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S3_ORB | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.08.03 16:46:00 UTC=2026.08.03 13:46:00 NY=2026.08.03 09:46:00 nyDate=2026.08.03 nyWindow=[2026.08.03 09:30,2026.08.03 09:45) brokerWindow=[2026.08.03 16:30,2026.08.03 16:45) offsets_minutes=180/180 verified=true M1=15/15 actual=15 high=4035.54000000 low=4019.00000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S1_4H_BREAKOUT | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.08.03 17:00:00 UTC=2026.08.03 14:00:00 NY=2026.08.03 10:00:00 nyDate=2026.08.03 nyWindow=[2026.08.03 00:00,2026.08.03 04:00) brokerWindow=[2026.08.03 07:00,2026.08.03 11:00) offsets_minutes=180/180 verified=true M1=240/240 actual=240 high=4072.07000000 low=4051.92000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S3_ORB | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.08.03 17:00:00 UTC=2026.08.03 14:00:00 NY=2026.08.03 10:00:00 nyDate=2026.08.03 nyWindow=[2026.08.03 09:30,2026.08.03 09:45) brokerWindow=[2026.08.03 16:30,2026.08.03 16:45) offsets_minutes=180/180 verified=true M1=15/15 actual=15 high=4035.54000000 low=4019.00000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S1_4H_BREAKOUT | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.08.03 17:01:00 UTC=2026.08.03 14:01:00 NY=2026.08.03 10:01:00 nyDate=2026.08.03 nyWindow=[2026.08.03 00:00,2026.08.03 04:00) brokerWindow=[2026.08.03 07:00,2026.08.03 11:00) offsets_minutes=180/180 verified=true M1=240/240 actual=240 high=4072.07000000 low=4051.92000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S3_ORB | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.08.03 17:01:00 UTC=2026.08.03 14:01:00 NY=2026.08.03 10:01:00 nyDate=2026.08.03 nyWindow=[2026.08.03 09:30,2026.08.03 09:45) brokerWindow=[2026.08.03 16:30,2026.08.03 16:45) offsets_minutes=180/180 verified=true M1=15/15 actual=15 high=4035.54000000 low=4019.00000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S3_ORB | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.08.03 17:01:00 UTC=2026.08.03 14:01:00 NY=2026.08.03 10:01:00 nyDate=2026.08.03 nyWindow=[2026.08.03 09:30,2026.08.03 09:45) brokerWindow=[2026.08.03 16:30,2026.08.03 16:45) offsets_minutes=180/180 verified=true M1=15/15 actual=15 high=4035.54000000 low=4019.00000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false"
+      ],
+      "checks": 78
+    },
+    {
+      "id": "clock-regression",
+      "status": "PASS",
+      "from_date": "2026.08.03",
+      "until_date_exclusive": "2026.08.04",
+      "model": "M1_OHLC",
+      "mapping_scope": "SYNTHETIC_FIXED_OR_EU_RULE_NOT_BROKER_VERIFICATION",
+      "binary_sha256": "edcde171b8d9e79f933691486b2e4ac51cd4a371efe48105676d101e7736a49f",
+      "recoveries": [],
+      "checks": 69
+    },
+    {
+      "id": "orb-regression",
+      "status": "PASS",
+      "from_date": "2026.08.03",
+      "until_date_exclusive": "2026.08.04",
+      "model": "M1_OHLC",
+      "mapping_scope": "SYNTHETIC_FIXED_OR_EU_RULE_NOT_BROKER_VERIFICATION",
+      "binary_sha256": "73006f4e8547ca0b8eac8bdf74ec5cd9fa9013955c8c517ece31e2297189c4a0",
+      "recoveries": [],
+      "checks": 100
+    },
+    {
+      "id": "continuous-recovery",
+      "status": "PASS",
+      "from_date": "2026.08.03",
+      "until_date_exclusive": "2026.08.04",
+      "model": "M1_OHLC",
+      "mapping_scope": "SYNTHETIC_FIXED_OR_EU_RULE_NOT_BROKER_VERIFICATION",
+      "binary_sha256": "261c2cf65a35f72f077ac68d156f9693ccc95ace77532b19f29ef38985af6b9c",
+      "recoveries": [
+        "SCALPING BOT | S1_4H_BREAKOUT | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.08.03 11:00:00 UTC=2026.08.03 08:00:00 NY=2026.08.03 04:00:00 nyDate=2026.08.03 nyWindow=[2026.08.03 00:00,2026.08.03 04:00) brokerWindow=[2026.08.03 07:00,2026.08.03 11:00) offsets_minutes=180/180 verified=true M1=240/240 actual=240 high=4072.07000000 low=4051.92000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S3_ORB | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.08.03 16:45:00 UTC=2026.08.03 13:45:00 NY=2026.08.03 09:45:00 nyDate=2026.08.03 nyWindow=[2026.08.03 09:30,2026.08.03 09:45) brokerWindow=[2026.08.03 16:30,2026.08.03 16:45) offsets_minutes=180/180 verified=true M1=15/15 actual=15 high=4035.54000000 low=4019.00000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false"
+      ]
+    },
+    {
+      "id": "unverified-recovery",
+      "status": "PASS",
+      "from_date": "2026.08.03",
+      "until_date_exclusive": "2026.08.04",
+      "model": "M1_OHLC",
+      "mapping_scope": "SYNTHETIC_FIXED_OR_EU_RULE_NOT_BROKER_VERIFICATION",
+      "binary_sha256": "261c2cf65a35f72f077ac68d156f9693ccc95ace77532b19f29ef38985af6b9c",
+      "recoveries": []
+    },
+    {
+      "id": "ny-dst-history",
+      "status": "PASS",
+      "from_date": "2026.03.06",
+      "until_date_exclusive": "2026.03.11",
+      "model": "M1_OHLC",
+      "mapping_scope": "SYNTHETIC_FIXED_OR_EU_RULE_NOT_BROKER_VERIFICATION",
+      "binary_sha256": "261c2cf65a35f72f077ac68d156f9693ccc95ace77532b19f29ef38985af6b9c",
+      "recoveries": [
+        "SCALPING BOT | S1_4H_BREAKOUT | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.03.06 00:00:00 UTC=2026.03.05 22:00:00 NY=2026.03.05 17:00:00 nyDate=2026.03.05 nyWindow=[2026.03.05 00:00,2026.03.05 04:00) brokerWindow=[2026.03.05 07:00,2026.03.05 11:00) offsets_minutes=120/120 verified=true M1=240/240 actual=240 high=5176.82000000 low=5120.65000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S3_ORB | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.03.06 00:00:00 UTC=2026.03.05 22:00:00 NY=2026.03.05 17:00:00 nyDate=2026.03.05 nyWindow=[2026.03.05 09:30,2026.03.05 09:45) brokerWindow=[2026.03.05 16:30,2026.03.05 16:45) offsets_minutes=120/120 verified=true M1=15/15 actual=15 high=5123.81000000 low=5090.90000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S1_4H_BREAKOUT | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.03.06 11:00:00 UTC=2026.03.06 09:00:00 NY=2026.03.06 04:00:00 nyDate=2026.03.06 nyWindow=[2026.03.06 00:00,2026.03.06 04:00) brokerWindow=[2026.03.06 07:00,2026.03.06 11:00) offsets_minutes=120/120 verified=true M1=240/240 actual=240 high=5130.18000000 low=5096.35000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S3_ORB | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.03.06 16:45:00 UTC=2026.03.06 14:45:00 NY=2026.03.06 09:45:00 nyDate=2026.03.06 nyWindow=[2026.03.06 09:30,2026.03.06 09:45) brokerWindow=[2026.03.06 16:30,2026.03.06 16:45) offsets_minutes=120/120 verified=true M1=15/15 actual=15 high=5115.29000000 low=5084.30000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S1_4H_BREAKOUT | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.03.09 10:00:00 UTC=2026.03.09 08:00:00 NY=2026.03.09 04:00:00 nyDate=2026.03.09 nyWindow=[2026.03.09 00:00,2026.03.09 04:00) brokerWindow=[2026.03.09 06:00,2026.03.09 10:00) offsets_minutes=120/120 verified=true M1=240/240 actual=240 high=5140.61000000 low=5080.94000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S3_ORB | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.03.09 15:45:00 UTC=2026.03.09 13:45:00 NY=2026.03.09 09:45:00 nyDate=2026.03.09 nyWindow=[2026.03.09 09:30,2026.03.09 09:45) brokerWindow=[2026.03.09 15:30,2026.03.09 15:45) offsets_minutes=120/120 verified=true M1=15/15 actual=15 high=5111.31000000 low=5074.35000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S1_4H_BREAKOUT | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.03.10 10:00:00 UTC=2026.03.10 08:00:00 NY=2026.03.10 04:00:00 nyDate=2026.03.10 nyWindow=[2026.03.10 00:00,2026.03.10 04:00) brokerWindow=[2026.03.10 06:00,2026.03.10 10:00) offsets_minutes=120/120 verified=true M1=240/240 actual=240 high=5181.29000000 low=5154.37000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S3_ORB | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.03.10 15:45:00 UTC=2026.03.10 13:45:00 NY=2026.03.10 09:45:00 nyDate=2026.03.10 nyWindow=[2026.03.10 09:30,2026.03.10 09:45) brokerWindow=[2026.03.10 15:30,2026.03.10 15:45) offsets_minutes=120/120 verified=true M1=15/15 actual=15 high=5222.40000000 low=5207.30000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false"
+      ]
+    },
+    {
+      "id": "broker-dst-history",
+      "status": "PASS",
+      "from_date": "2026.10.23",
+      "until_date_exclusive": "2026.10.28",
+      "model": "M1_OHLC",
+      "mapping_scope": "SYNTHETIC_FIXED_OR_EU_RULE_NOT_BROKER_VERIFICATION",
+      "binary_sha256": "261c2cf65a35f72f077ac68d156f9693ccc95ace77532b19f29ef38985af6b9c",
+      "recoveries": [
+        "SCALPING BOT | S1_4H_BREAKOUT | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.10.23 01:00:00 UTC=2026.10.22 22:00:00 NY=2026.10.22 18:00:00 nyDate=2026.10.22 nyWindow=[2026.10.22 00:00,2026.10.22 04:00) brokerWindow=[2026.10.22 07:00,2026.10.22 11:00) offsets_minutes=180/180 verified=true M1=240/240 actual=240 high=4102.67000000 low=4066.53000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S3_ORB | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.10.23 01:00:00 UTC=2026.10.22 22:00:00 NY=2026.10.22 18:00:00 nyDate=2026.10.22 nyWindow=[2026.10.22 09:30,2026.10.22 09:45) brokerWindow=[2026.10.22 16:30,2026.10.22 16:45) offsets_minutes=180/180 verified=true M1=15/15 actual=15 high=4080.50000000 low=4059.73000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S1_4H_BREAKOUT | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.10.23 11:00:00 UTC=2026.10.23 08:00:00 NY=2026.10.23 04:00:00 nyDate=2026.10.23 nyWindow=[2026.10.23 00:00,2026.10.23 04:00) brokerWindow=[2026.10.23 07:00,2026.10.23 11:00) offsets_minutes=180/180 verified=true M1=240/240 actual=240 high=4028.47000000 low=4001.90000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S3_ORB | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.10.23 16:45:00 UTC=2026.10.23 13:45:00 NY=2026.10.23 09:45:00 nyDate=2026.10.23 nyWindow=[2026.10.23 09:30,2026.10.23 09:45) brokerWindow=[2026.10.23 16:30,2026.10.23 16:45) offsets_minutes=180/180 verified=true M1=15/15 actual=15 high=4029.04000000 low=4021.19000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S1_4H_BREAKOUT | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.10.26 10:00:00 UTC=2026.10.26 08:00:00 NY=2026.10.26 04:00:00 nyDate=2026.10.26 nyWindow=[2026.10.26 00:00,2026.10.26 04:00) brokerWindow=[2026.10.26 06:00,2026.10.26 10:00) offsets_minutes=120/120 verified=true M1=240/240 actual=240 high=4019.30000000 low=4003.24000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S3_ORB | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.10.26 15:45:00 UTC=2026.10.26 13:45:00 NY=2026.10.26 09:45:00 nyDate=2026.10.26 nyWindow=[2026.10.26 09:30,2026.10.26 09:45) brokerWindow=[2026.10.26 15:30,2026.10.26 15:45) offsets_minutes=120/120 verified=true M1=15/15 actual=15 high=4010.15000000 low=3999.91000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S1_4H_BREAKOUT | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.10.27 10:00:00 UTC=2026.10.27 08:00:00 NY=2026.10.27 04:00:00 nyDate=2026.10.27 nyWindow=[2026.10.27 00:00,2026.10.27 04:00) brokerWindow=[2026.10.27 06:00,2026.10.27 10:00) offsets_minutes=120/120 verified=true M1=240/240 actual=240 high=4025.41000000 low=3997.15000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false",
+        "SCALPING BOT | S3_ORB | RANGE_RECOVERED | symbol=XAUUSD | broker=2026.10.27 15:45:00 UTC=2026.10.27 13:45:00 NY=2026.10.27 09:45:00 nyDate=2026.10.27 nyWindow=[2026.10.27 09:30,2026.10.27 09:45) brokerWindow=[2026.10.27 15:30,2026.10.27 15:45) offsets_minutes=120/120 verified=true M1=15/15 actual=15 high=4031.98000000 low=4020.88000000 status=RANGE_READY reason=VALIDATED_EXACT_M1_HISTORY retry=false"
+      ]
+    }
+  ],
+  "native_assertions": 247,
+  "limitations": [
+    "Synthetic broker rules do not verify actual historical broker timezone.",
+    "Nonvisual M1 OHLC tester; no real-tick profitability or live execution claim.",
+    "Chart object properties and chart-change callback tested; manual UI timeframe switching not performed."
+  ]
+}

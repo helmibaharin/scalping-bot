@@ -2,6 +2,8 @@
 #define SB_OPENING_RANGE_BREAKOUT
 SBORBState sb_orb;
 string sb_orb_wait="";
+SBSessionRange sb_orb_range;
+datetime sb_orb_replay_retry=0;
 void SBORBLog(SBORBCandidate &c,datetime stamp)
   {
    datetime utc,ny=0;if(SBServerToUTC(stamp,utc))SBNYLocal(utc,ny);
@@ -139,38 +141,36 @@ void SBEvaluateORB(datetime utc,bool startup)
    if(sb_orb.day!=day)
      {
       ZeroMemory(sb_orb);sb_orb.day=day;sb_orb_context_day=0;sb_orb_htf_checked=0;sb_orb_context_ok=false;
-      ArrayResize(sb_orb_levels,0);sb_orb_h1=0;sb_orb_h4=0;sb_orb_wait="";
+      ArrayResize(sb_orb_levels,0);sb_orb_h1=0;sb_orb_h4=0;sb_orb_wait="";sb_orb_replay_retry=0;
       if(InpDrawObjects)ObjectsDeleteAll(0,sb_object_prefix+"ORB.");
-      if(!SBORBSessionUTC(day,sb_orb.open_utc,sb_orb.end_utc)){sb_orb.invalid=true;SBEvent(SB_ORB,"ORB_SESSION_MAPPING_INVALID","NY session cannot be mapped uniquely");return;}
       SBEvent(SB_ORB,"ORB_NY_DAY_RESET","Pending setups reset; existing positions retain their broker protections");
      }
    if(sb_orb.invalid)return;
+   if(!SBRecoverSessionRange(SB_ORB,utc,570,570+InpORBOpeningRangeMinutes,sb_orb_range))
+     {sb_orb.high=sb_orb_range.high;sb_orb.low=sb_orb_range.low;return;}
+   sb_orb.open_utc=sb_orb_range.start_utc;sb_orb.end_utc=sb_orb_range.end_utc;
    if(!sb_orb.ready)
      {
-      string why="";
-      if(!SBORBLoadRange(sb_orb.open_utc,sb_orb.end_utc,utc,sb_orb.high,sb_orb.low,why))
-        {
-         if(why!=sb_orb_wait){SBEvent(SB_ORB,why,"Opening range not available");sb_orb_wait=why;}
-         // Allow asynchronous history loading; after a bounded 5 minute grace, skip the day.
-         if(utc>sb_orb.end_utc+300)sb_orb.invalid=true;return;
-        }
-      sb_orb.ready=true;SBEvent(SB_ORB,"ORB_RANGE_READY",StringFormat("high=%.8f low=%.8f frozen NY=%s",sb_orb.high,sb_orb.low,TimeToString(day)));
+      sb_orb.high=sb_orb_range.high;sb_orb.low=sb_orb_range.low;sb_orb.ready=true;
       if(InpORBDrawRange){SBHLine(SB_ORB,"rangeHigh",sb_orb.high,clrOrangeRed);SBHLine(SB_ORB,"rangeLow",sb_orb.low,clrOrangeRed);}
      }
-   datetime closed=iTime(_Symbol,InpORBSignalTF,1);if(closed<=0 || closed<=sb_orb.last)return;
-   datetime from,finish;if(!SBUTCToServer(sb_orb.open_utc,from) || !SBUTCToServer(sb_orb.end_utc,finish))return;
+   datetime closed=iTime(_Symbol,InpORBSignalTF,1);if(closed<=0 || closed<=sb_orb.last || utc<sb_orb_replay_retry)return;
+   datetime from=sb_orb_range.from,required=sb_orb.last>=from?sb_orb.last+300:from;
    MqlRates bars[];int n=CopyRates(_Symbol,InpORBSignalTF,from-200*300,closed,bars);
-   if(n<InpORBPivotLeft+InpORBPivotRight+5)return;
-   bool first=sb_orb.last==0;
+   string why="";
+   if(n<InpORBPivotLeft+InpORBPivotRight+5 || !SBReplayCoverage(bars,required,closed,300,why) || (sb_orb.last==0 && bars[0].time>=from))
+     {
+      sb_orb_replay_retry=utc+30;sb_orb_wait="RANGE_HISTORY_INCOMPLETE "+why;
+      SBEvent(SB_ORB,"SETUP_HISTORY_RETRY",sb_orb_wait);return;
+     }
+   sb_orb_wait="";bool first=sb_orb.last==0;
    for(int i=0;i<n;i++)
      {
       if(bars[i].time<=sb_orb.last || bars[i].time+300>TimeCurrent())continue;
-      if(!SBORBValidOHLC(bars[i]) || (!first && bars[i].time>=from && bars[i].time-sb_orb.last!=300))
-        {sb_orb.invalid=true;SBEvent(SB_ORB,"ORB_HISTORY_GAP","Skip NY day: chronological M5 reconstruction incomplete");return;}
-      if(first && bars[i].time>=finish)
-        {sb_orb.invalid=true;SBEvent(SB_ORB,"ORB_HISTORY_MISSING","Missing pre-session structural history");return;}
+      if(!SBRangeOHLC(bars[i])){sb_orb_replay_retry=utc+30;sb_orb_wait="RANGE_HISTORY_INCOMPLETE INVALID_STRUCTURAL_OHLC";return;}
       if(!first && bars[i].time-sb_orb.last!=300)ZeroMemory(sb_orb.structure);
-      first=false;SBORBBar(bars,i,!startup && i==n-1);sb_orb.last=bars[i].time;
+      first=false;
+      SBORBBar(bars,i,!startup && i==n-1 && SBFreshSessionConfirmation(bars[i].time,sb_signal_after,TimeCurrent()));sb_orb.last=bars[i].time;
      }
   }
 #endif

@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "preserved_project_files": 98,
+  "protected_parent_files": 219,
+  "changed_existing_files": [
+    "MQL5\\Experts\\ScalpingBot.mq5",
+    "MQL5\\Include\\ScalpingBot\\FourHourBreakout.mqh",
+    "MQL5\\Include\\ScalpingBot\\OpeningRangeBreakout.mqh",
+    "MQL5\\Include\\ScalpingBot\\ORBExternal.mqh",
+    "MQL5\\Include\\ScalpingBot\\VolumeProfileRuntime.mqh",
+    "tests\\verify_project.ps1",
+    "tests\\verify_repository.ps1"
+  ],
+  "strategy_2_4_engines": "UNCHANGED",
+  "strategy_5_calculation_methods_policy": "UNCHANGED",
+  "risk_execution_persistence_timezone": "UNCHANGED"
+}

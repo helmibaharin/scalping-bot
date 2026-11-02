@@ -1,5 +1,12 @@
 $ErrorActionPreference='Stop'
 $root=Split-Path $PSScriptRoot -Parent
+if(Test-Path -LiteralPath "$root/artifacts/range-recovery-v1/before.json"){
+ $env:PYTHONHOME='C:/Program Files/MySQL/MySQL Shell 8.0/lib/Python3.12'
+ & 'C:/Program Files/MySQL/MySQL Workbench 8.0 CE/python.exe' "$PSScriptRoot/verify_range_recovery.py"
+ if($LASTEXITCODE -ne 0){throw 'Range recovery preservation gate failed'}
+ & "$PSScriptRoot/verify_repository.ps1"
+ exit 0
+}
 if(!(Test-Path -LiteralPath "$root/artifacts/protected-files-before.json")){
  & "$PSScriptRoot/verify_repository.ps1"
  exit 0

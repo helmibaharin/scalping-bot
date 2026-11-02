@@ -7,6 +7,7 @@
 #include "../Include/ScalpingBot/Rules.mqh"
 #include "../Include/ScalpingBot/NewYorkTime.mqh"
 #include "../Include/ScalpingBot/Diagnostics.mqh"
+#include "../Include/ScalpingBot/SessionRange.mqh"
 #include "../Include/ScalpingBot/ORBExternal.mqh"
 #include "../Include/ScalpingBot/StatePersistence.mqh"
 #include "../Include/ScalpingBot/SMTContext.mqh"
@@ -48,13 +49,16 @@ void SBPanel()
       else mapping="NY_TIME_UNSUPPORTED";
      }
    if(mapping!=""){four_why=mapping;triangle_why=mapping;orb_why=mapping;}
+   datetime panel_ny=0;SBNYLocal(utc,panel_ny);
+   string orb_range_status=sb_orb_range.state+" "+sb_orb_range.reason;
+   if(sb_orb.ready && panel_ny>=day+InpORBTradingEndNYMinutes*60)orb_range_status="SESSION_EXPIRED (range recovered; trading window ended)";
    Comment("SCALPING BOT V1.0 | ",_Symbol," | ",InpSignalOnly?"SIGNAL_ONLY":"ORDER_EXECUTION",
-     "\n4H: ",InpEnable4HBreakout?"ENABLED":"DISABLED"," | ",sb_four.invalid?"DAY_INVALID":(sb_four.side!=0?"WAITING_FOR_RETURN":(sb_four.ready?"RANGE_READY":"WAITING_FOR_RANGE")),
+     "\n4H: ",InpEnable4HBreakout?"ENABLED":"DISABLED"," | ",mapping!=""?"TIMEZONE_MAPPING_UNVERIFIED "+mapping:(sb_four.invalid?"SETUP_INVALIDATED OPPOSITE_BOUNDARY":(sb_four_wait!=""?sb_four_wait:(sb_four.side!=0?"WAITING_FOR_RETURN":sb_four_range.state+" "+sb_four_range.reason))),
      " | HIGH ",DoubleToString(sb_four.high,_Digits)," LOW ",DoubleToString(sb_four.low,_Digits)," | TRADES ",SBTradeCountText(four,Inp4HMaxTradesPerNYDay,four_why),
       "\nSHAPE PATTERN: ",InpEnableTriangleMethod?"ENABLED":"DISABLED"," | ",InpShapeLegacyTriangle?"LEGACY TRIANGLE":"M15/M5 SHAPE ENGINE",
      " | A/D/S=",InpEnableAscendingTriangle?"ON":"OFF","/",InpEnableDescendingTriangle?"ON":"OFF","/",InpEnableSymmetricalTriangle?"ON":"OFF",
      " | TRADES ",SBTradeCountText(triangle,InpTriangleMaxTradesPerDay,triangle_why),
-     "\nORB: ",InpEnableORBStrategy?"ENABLED":"DISABLED"," | ",sb_orb.invalid?"DAY_INVALID":(sb_orb.ready?"RANGE_READY":"WAIT_OPENING_RANGE"),
+     "\nORB: ",InpEnableORBStrategy?"ENABLED":"DISABLED"," | ",mapping!=""?"TIMEZONE_MAPPING_UNVERIFIED "+mapping:(sb_orb.invalid?"SETUP_INVALIDATED":(sb_orb_wait!=""?sb_orb_wait:orb_range_status)),
      " | C/F PHASE ",sb_orb.continuation.phase,"/",sb_orb.reversal.phase," | TRADES ",SBTradeCountText(orb,InpORBMaxTradesPerNYDay,orb_why),
      "\nSMT: ",InpEnableSMTStrategy?SBSMTProfileName():"DISABLED"," | TREND ",SBSMTTrendName(sb_smt.trend)," TF ",(int)InpSMTTrendTF,
      " | PHASE ",sb_smt.candidate.phase," | ",sb_smt.candidate.reason,
@@ -68,6 +72,7 @@ void SBRun()
   {
    if(!sb_started)return;
    datetime now=TimeCurrent();
+   if(InpEnableVolumeProfile)SBVPDrawProfile();
    if(now==sb_last_run && !sb_fill_pending)return;
    int mutex=SBAccountMutex();if(mutex==INVALID_HANDLE)return;
    sb_last_run=now;sb_fill_pending=false;
@@ -150,6 +155,8 @@ int OnInit()
    if(!EventSetTimer(1))return INIT_FAILED;
    sb_started=true;SBRun();return INIT_SUCCEEDED;
   }
+void OnChartEvent(const int id,const long &lparam,const double &dparam,const string &sparam)
+  {if(id==CHARTEVENT_CHART_CHANGE && sb_started && InpEnableVolumeProfile)SBVPDrawProfile(true);}
 void OnTick(){SBRun();}
 void OnTimer(){SBRun();}
 void OnDeinit(const int reason)

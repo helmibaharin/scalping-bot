@@ -2,35 +2,29 @@
 #define SB_FOUR_HOUR
 SB4HState sb_four;
 datetime sb_four_last=0;
+SBSessionRange sb_four_range;
+string sb_four_wait="";
+datetime sb_four_replay_retry=0;
 bool SBLoad4HRange(datetime utc)
   {
    datetime day,midnight;if(!SBNYDay(utc,day,midnight))return false;
    if(sb_four.day!=day)
      {
       if(sb_four.side!=0)SBEvent(SB_4H,"DAY_EXPIRED","Pending breakout expired at NY midnight; open positions retained");
-      ZeroMemory(sb_four);sb_four.day=day;sb_four_last=0;
+      ZeroMemory(sb_four);sb_four.day=day;sb_four_last=0;sb_four_replay_retry=0;sb_four_wait="";
       SBEvent(SB_4H,"NY_DAY_RESET",TimeToString(day,TIME_DATE));
      }
-   if(sb_four.ready || sb_four.invalid)return sb_four.ready;
-   datetime local_end;if(!SBNYLocal(midnight+4*3600,local_end) || local_end!=day+4*3600)
-     {sb_four.invalid=true;SBEvent(SB_4H,"RANGE_SKIP_DST_DAY","00-04 local does not contain exactly four H1 hours");return false;}
-   if(utc<midnight+4*3600)return false;
-   double high=-DBL_MAX,low=DBL_MAX;
-   for(int i=0;i<4;i++)
+   if(sb_four.invalid)return false;
+   if(!SBRecoverSessionRange(SB_4H,utc,0,240,sb_four_range))
+     {sb_four.high=sb_four_range.high;sb_four.low=sb_four_range.low;return false;}
+   if(!sb_four.ready)
      {
-      datetime start,end;if(!SBUTCToServer(midnight+i*3600,start) || !SBUTCToServer(midnight+(i+1)*3600,end) || end-start!=3600)
-        {sb_four.invalid=true;SBEvent(SB_4H,"RANGE_SKIP_MAPPING","Broker H1 interval is ambiguous/discontinuous");return false;}
-      MqlRates bar[];if(CopyRates(_Symbol,PERIOD_H1,start,start,bar)!=1 || bar[0].time!=start)return false;
-      if(start+3600>TimeCurrent())return false;
-      high=MathMax(high,bar[0].high);low=MathMin(low,bar[0].low);
+      sb_four.high=sb_four_range.high;sb_four.low=sb_four_range.low;sb_four.ready=true;
+      string id=TimeToString(day,TIME_DATE);
+      SBHLine(SB_4H,id+".rangeHigh",sb_four.high,clrOrange);SBHLine(SB_4H,id+".rangeLow",sb_four.low,clrOrange);
+      SBZone(SB_4H,id+".range",sb_four_range.from,sb_four_range.to,sb_four.high,sb_four.low,clrOrange);
      }
-   if(high<=low || low<=0)return false;
-   sb_four.high=high;sb_four.low=low;sb_four.ready=true;
-   string id=TimeToString(day,TIME_DATE);
-   SBHLine(SB_4H,id+".rangeHigh",high,clrOrange);SBHLine(SB_4H,id+".rangeLow",low,clrOrange);
-   datetime from,to;SBUTCToServer(midnight,from);SBUTCToServer(midnight+4*3600,to);
-   SBZone(SB_4H,id+".range",from,to,high,low,clrOrange);
-   SBEvent(SB_4H,"RANGE_READY",StringFormat("NYday=%s high=%.8f low=%.8f",id,high,low));return true;
+   return true;
   }
 void SB4HBar(MqlRates &bars[],int end,bool actionable)
   {
@@ -38,7 +32,7 @@ void SB4HBar(MqlRates &bars[],int end,bool actionable)
    if(!SBServerToUTC(b.time,utc) || !SBNYDay(utc,day,midnight) || day!=sb_four.day || utc<midnight+4*3600)return;
    if(sb_four.invalid)return;
    if(sb_four_last>0 && b.time-sb_four_last!=300)
-     {sb_four.invalid=true;SBEvent(SB_4H,"M5_HISTORY_GAP","Cannot reconstruct excursion safely; skip remainder of NY day");return;}
+     {sb_four_wait="RANGE_HISTORY_INCOMPLETE M5_HISTORY_GAP";SBEvent(SB_4H,"SETUP_HISTORY_RETRY","Cannot reconstruct excursion safely; retry required history");return;}
    sb_four_last=b.time;
    double tick=SymbolInfoDouble(_Symbol,SYMBOL_TRADE_TICK_SIZE);
    int event=SB4HStep(sb_four.side,sb_four.extreme,b.open,b.high,b.low,b.close,sb_four.low,sb_four.high,tick);
@@ -82,20 +76,23 @@ void SB4HBar(MqlRates &bars[],int end,bool actionable)
 void SBEvaluate4H(datetime utc,bool startup)
   {
    if(!InpEnable4HBreakout || !SBLoad4HRange(utc))return;
-   datetime day,midnight;SBNYDay(utc,day,midnight);
-   datetime from;if(!SBUTCToServer(midnight+4*3600,from))return;
-   datetime closed=iTime(_Symbol,PERIOD_M5,1);if(closed<=0 || (!startup && closed<=sb_four_last))return;
-   // Include structural lookback preceding the range; process only post-range bars.
+   datetime closed=iTime(_Symbol,PERIOD_M5,1);if(closed<=0 || closed<=sb_four_last || utc<sb_four_replay_retry)return;
+   datetime from=sb_four_range.to,required=sb_four_last>0?sb_four_last+300:from;
+   if(closed<required)return;
    MqlRates bars[];int n=CopyRates(_Symbol,PERIOD_M5,from-InpStructureLookbackBars*300,closed,bars);
-   if(n<1)return;
-   bool first_replay=sb_four_last==0;
+   string why="";
+   if(n<1 || !SBReplayCoverage(bars,required,closed,300,why))
+     {
+      sb_four_replay_retry=utc+30;sb_four_wait="RANGE_HISTORY_INCOMPLETE "+why;
+      SBEvent(SB_4H,"SETUP_HISTORY_RETRY",sb_four_wait);return;
+     }
+   sb_four_wait="";
    for(int i=0;i<n;i++)
      {
-      if(bars[i].time<from || bars[i].time<=sb_four_last || bars[i].time>closed)continue;
-      if(first_replay && bars[i].time!=from){sb_four.invalid=true;SBEvent(SB_4H,"HISTORY_MISSING","Missing first post-range M5 candle");return;}
-      first_replay=false;
-      // Restart replay never submits an order, even on the newest historical close.
-      SB4HBar(bars,i,!startup && i==n-1);
+      if(bars[i].time<required || bars[i].time>closed)continue;
+      SB4HBar(bars,i,!startup && i==n-1 && SBFreshSessionConfirmation(bars[i].time,sb_signal_after,TimeCurrent()));
+      if(sb_four_wait!=""){sb_four_replay_retry=utc+30;break;}
+      if(sb_four.invalid)break;
      }
   }
 #endif

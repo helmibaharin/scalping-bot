@@ -8,11 +8,9 @@ datetime sb_orb_context_day=0,sb_orb_htf_checked=0;
 // Local wall-clock conversion is accepted only if it round-trips uniquely.
 bool SBORBNYToUTC(datetime local,datetime &utc)
   {
-   datetime a=local+4*3600,b=local+5*3600,back;int count=0;
-   if(SBNYLocal(a,back) && back==local){utc=a;count++;}
-   if(SBNYLocal(b,back) && back==local){utc=b;count++;}
-   return count==1;
+   return SBNYToUTC(local,utc);
   }
+
 bool SBORBSessionUTC(datetime day,datetime &start,datetime &finish)
   {
    return SBORBNYToUTC(day+570*60,start) && SBORBNYToUTC(day+(570+InpORBOpeningRangeMinutes)*60,finish) &&
@@ -33,18 +31,17 @@ bool SBORBExactRange(MqlRates &bars[],datetime start,datetime finish,int seconds
   }
 bool SBORBLoadRange(datetime start_utc,datetime finish_utc,datetime decision,double &high,double &low,string &why)
   {
-   datetime start,finish;
+   // Compatibility entry point: same strict M1 validator as live recovery.
+   SBSessionRange r={};r.start_utc=start_utc;r.end_utc=finish_utc;
    if(decision<finish_utc){why="ORB_WAIT_RANGE";return false;}
-   if(!SBUTCToServer(start_utc,start) || !SBUTCToServer(finish_utc,finish) || finish-start!=finish_utc-start_utc)
-     {why="ORB_RANGE_MAPPING_INCONSISTENT";return false;}
-   MqlRates bars[];
-   if(InpORBOpeningRangeMinutes==15 && CopyRates(_Symbol,PERIOD_M15,start,finish-1,bars)==1 &&
-      SBORBExactRange(bars,start,finish,900,high,low))return true;
-   int n=CopyRates(_Symbol,PERIOD_M1,start,finish-1,bars);
+   if(!SBRangeMapping(r)){why=r.reason;return false;}
+   r.cutoff=finish_utc;r.expected=(int)((finish_utc-start_utc)/60);
+   MqlRates bars[];int n=CopyRates(_Symbol,PERIOD_M1,r.from,r.to-1,bars);
    if(n<0){why="ORB_RANGE_HISTORY_PENDING";return false;}
-   if(!SBORBExactRange(bars,start,finish,60,high,low)){why="ORB_RANGE_MISSING_OR_INCONSISTENT";return false;}
-   return true;
+   if(!SBValidateRangeBars(bars,decision,r)){why=r.reason;return false;}
+   high=r.high;low=r.low;why="";return r.ready;
   }
+
 void SBORBAddLevel(string type,string source,double price,int side,datetime known)
   {
    if(price<=0)return;

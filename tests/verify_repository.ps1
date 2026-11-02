@@ -41,7 +41,9 @@ foreach($source in $sources){
  }
 }
 if($VerifyReleaseSnapshot){
- $build=Get-Content "$root/artifacts/daily-lock-v1/final-build.json" -Raw | ConvertFrom-Json
+ $buildPath="$root/artifacts/range-recovery-v1/final-build.json"
+ if(!(Test-Path -LiteralPath $buildPath)){$buildPath="$root/artifacts/daily-lock-v1/final-build.json"}
+ $build=Get-Content $buildPath -Raw | ConvertFrom-Json
  Assert ((Get-FileHash "$root/MQL5/Experts/ScalpingBot.ex5" -Algorithm SHA256).Hash.ToLowerInvariant() -eq $build.binary_sha256) 'distributed EA matches recorded build'
  foreach($source in $build.sources){Assert ((Get-FileHash (Join-Path $root $source.path) -Algorithm SHA256).Hash.ToLowerInvariant() -eq $source.sha256) "release source matches: $($source.path)"}
 }

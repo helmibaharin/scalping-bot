@@ -57,7 +57,7 @@ The source-workspace preservation verifier is used when its local snapshots are 
 
 ## Validation and local research
 
-The latest daily-lock change compiled with zero errors/warnings and passed 36 native state assertions, 98 risk/execution assertions, 243 rule assertions and 18 Python tests. [Current validation summary](artifacts/daily-lock-v1/VALIDATION.md). These are engineering checks, not proof of a trading edge.
+The latest range-recovery and chart-level changes compiled with zero errors/warnings. Seven native XAUUSD tester runs passed, including 78 range/restart/chart assertions, 69 timezone assertions and 100 ORB assertions. The existing 98 risk/execution assertions, 243 rule assertions and 18 Python tests also passed. [Current findings, exact historical dates and limitations](docs/HISTORICAL_RANGE_RECOVERY.md). These are engineering checks, not proof of a trading edge. The [daily-lock validation summary](artifacts/daily-lock-v1/VALIDATION.md) describes its earlier build.
 
 Other validation records describe their specific historical builds: [broker mapping](docs/BROKER_TIME_VALIDATION.md), [Volume Profile](docs/VOLUME_PROFILE_VALIDATION.md), [Shape](docs/SHAPE_VALIDATION.md), and [SMT](docs/SMT_VALIDATION.md). Their market samples are short; mixed/generated tick periods and unverified assumptions are disclosed in those reports.
 
@@ -69,6 +69,7 @@ Native tester preparation, replay and release-packaging helpers retain the origi
 - `profiles/`: twelve presets with real-account trading blocked.
 - `tests/`: production-function adapters, native fixtures, offline reporting and local tester/research tools.
 - `docs/`: strategy rules, inputs, installation, validation and limitations.
-- `artifacts/daily-lock-v1/`: compact current validation and build-fingerprint records only.
+- `artifacts/range-recovery-v1/`: compact current validation and build-fingerprint records only.
+- `artifacts/daily-lock-v1/`: compact validation records for the earlier daily-lock change.
 
 Terminal executables, credentials, account/session files, downloaded market data, raw account/trade logs, portable terminal caches, historical release ZIPs and bulky reports are excluded from Git. Generate local runtime/research outputs under `artifacts/`.
