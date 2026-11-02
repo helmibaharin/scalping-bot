@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "preserved_project_files": 114,
+  "protected_parent_files": 219,
+  "changed_existing_files": [
+    "MQL5/Experts/ScalpingBot.mq5",
+    "MQL5/Include/ScalpingBot/Config.mqh",
+    "MQL5/Include/ScalpingBot/PositionManager.mqh",
+    "MQL5/Include/ScalpingBot/RiskManager.mqh",
+    "MQL5/Include/ScalpingBot/ShapeEngine.mqh",
+    "MQL5/Include/ScalpingBot/SMTContext.mqh",
+    "profiles/all-five-xauusd-mtf-demo-execution.set",
+    "tests/test_risk_execution.ps1",
+    "tests/verify_project.ps1",
+    "tests/verify_repository.ps1"
+  ],
+  "unchanged_existing_profile_values": 280,
+  "unchanged_existing_input_defaults": 280,
+  "other_strategies": "S1/S3/S5 engines unchanged",
+  "entry_detection": "Shape/SMT entry engines unchanged"
+}

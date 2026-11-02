@@ -7,7 +7,8 @@ $execution=Get-Content "$inc/TradeExecutor.mqh" -Raw
 $rules=Get-Content "$inc/Rules.mqh" -Raw
 $vp=Get-Content "$inc/VolumeProfilePolicy.mqh" -Raw
 $vp=$vp.Substring($vp.IndexOf('bool SBVPAccountingAllows'),$vp.IndexOf('int SBVPPositions')-$vp.IndexOf('bool SBVPAccountingAllows'))+$vp.Substring($vp.IndexOf('bool SBVPEntryGuard'))
-$code=($rules+$vp+$risk+$execution) -replace '(?m)^#.*$',''
+$policy=Get-Content "$inc/SetupExitPolicy.mqh" -Raw
+$code=($policy+$rules+$vp+$risk+$execution) -replace '(?m)^#.*$',''
 $code=$code -replace '\bdatetime\b','long' -replace '(?m)^(bool|int|double|void|string) ','public static $1 '
 $code=$code -replace 'double &risk','ref double risk' -replace 'int &side','ref int side' -replace 'double &extreme','ref double extreme'
 $code=$code -replace 'SBTradesTodayChecked\(signal.strategy,midnight,TimeCurrent\(\),last_fill,count_reason\)','SBTradesTodayChecked(signal.strategy,midnight,TimeCurrent(),ref last_fill,ref count_reason)'
@@ -43,9 +44,9 @@ public static bool SBIsVP(int s){return s>=5&&s<=7;}
 public static int SBVPPositions(){int n=0;foreach(var p in positions)if(SBIsVP(p.strategy)&&p.symbol==_Symbol)n++;return n;}
 public static int SBVPBrokerEntries(int s,long day,long now,ref long last){last=vpLastExit;return history?vpEntries:-1;}
 public static bool SymbolInfoTick(string symbol,MqlTick q){q.bid=100;q.ask=100+spread;return fresh;}
-public static bool InpShapeReversalMinRREnabled=true;
+public static bool InpShapeReversalMinRREnabled=true,InpShapeSetupBasedExits=false,InpSMTSetupBasedExits=false,InpShapeLegacyTriangle=false;
 public static double InpShapeReversalMinRR=1,InpShapeContinuationMinRR=2;
-public static bool SBShapeDynamic(SBSignal s){return s.strategy==2 && !string.IsNullOrEmpty(s.method) && (s.method=="TRAP_REVERSAL" || s.pattern_type>3);}
+public static bool SBShapeDynamic(SBSignal s){return s.strategy==2 && !string.IsNullOrEmpty(s.method) && (SBSetupBasedExits(s.strategy,s.method) || s.method=="TRAP_REVERSAL" || s.pattern_type>3);}
 public static bool SBShapePlanGeometry(SBSignal s,double e,double sl,ref double tp,ref string why){tp=s.target;return tp>e;}
 public static int SBLedgerPlan(SBPlan p,string e,string why){return persist?0:-1;}
 public static bool SBLedgerResult(int k,MqlTradeResult r){return persist;}
@@ -53,7 +54,7 @@ public static int InpSMTMaxOpenPositions=1,InpSMTMaxTradesPerNYDay=3,InpSMTCoold
 public static bool InpSMTUseMinimumRR=true,InpSMTSignalOnly=false;
 public static double InpSMTMinimumRR=1,InpSMTMaxSpreadPoints=50,InpSMTMaxTradeRiskPercent=.25,smtTarget=108;
 public static bool smtRevalidate=true;
-public static bool SBSMTPlanGeometry(SBSignal s,double entry,double sl,ref double tp,ref string why){tp=smtTarget;double rr=s.direction*(tp-entry)/(s.direction*(entry-sl));if(s.direction*(tp-entry)<=0 || (InpSMTUseMinimumRR&&rr<InpSMTMinimumRR)){why="SMT_RR_BELOW_MINIMUM";return false;}return true;}
+public static bool SBSMTPlanGeometry(SBSignal s,double entry,double sl,ref double tp,ref string why){tp=smtTarget;double rr=s.direction*(tp-entry)/(s.direction*(entry-sl));if(s.direction*(tp-entry)<=0 || (InpSMTUseMinimumRR&&!InpSMTSetupBasedExits&&rr<InpSMTMinimumRR)){why="SMT_RR_BELOW_MINIMUM";return false;}return true;}
 public static bool SBSMTRevalidatePlan(SBPlan p,ref string why){return smtRevalidate;}
 public const int SB_4H=1,SB_TRIANGLE=2,PERIOD_M5=5,ACCOUNT_TRADE_MODE=1,ACCOUNT_TRADE_MODE_REAL=2,ACCOUNT_MARGIN_MODE=3,ACCOUNT_MARGIN_MODE_RETAIL_HEDGING=4;
 public const int SB_ORB=3;public static int InpORBMaxOpenPositions=1,InpORBMaxTradesPerNYDay=2,orbTrades=0;
@@ -118,7 +119,7 @@ public static string IntegerToString(long x){return x.ToString();}public static 
 public static int StringLen(string s){return s==null?0:s.Length;}
 public static string StringFormat(string s,params object[] args){return s;}
 public static void Assert(bool ok,string msg){checks++;if(!ok)throw new System.Exception("FAIL: "+msg);}
-public static void Fixture(){InpEnableDailyRiskLock=true;vpEntries=0;vpLastExit=0;positions.Clear();disk.Clear();consumed.Clear();sb_state_ok=true;InpEmergency=false;InpTradingEnabled=true;InpSignalOnly=false;InpAllowRealAccount=false;InpUseFixedVolume=true;InpFixedVolume=.01;InpMaxTotalOpenPositions=2;InpMaxTradeRiskPercent=.25;InpMaxCombinedOpenRiskPercent=.5;hedge=true;real=false;permissions=true;session=true;fresh=true;history=true;checkOK=true;persist=true;sendOK=true;calcOK=true;equity=10000;free=9000;spread=.2;minVolume=.01;maxVolume=100;step=.01;volumeLimit=0;stops=freeze=0;fourTrades=triangleTrades=0;sends=0;lastFill=0;sendCode=TRADE_RETCODE_DONE;tradeMode=4;fillMode=1;executionMode=2;}
+public static void Fixture(){InpRoundTripCommissionPerLot=0;InpShapeSetupBasedExits=InpSMTSetupBasedExits=false;InpShapeLegacyTriangle=false;InpEnableDailyRiskLock=true;vpEntries=0;vpLastExit=0;positions.Clear();disk.Clear();consumed.Clear();sb_state_ok=true;InpEmergency=false;InpTradingEnabled=true;InpSignalOnly=false;InpAllowRealAccount=false;InpUseFixedVolume=true;InpFixedVolume=.01;InpMaxTotalOpenPositions=2;InpMaxTradeRiskPercent=.25;InpMaxCombinedOpenRiskPercent=.5;hedge=true;real=false;permissions=true;session=true;fresh=true;history=true;checkOK=true;persist=true;sendOK=true;calcOK=true;equity=10000;free=9000;spread=.2;minVolume=.01;maxVolume=100;step=.01;volumeLimit=0;stops=freeze=0;fourTrades=triangleTrades=0;sends=0;lastFill=0;sendCode=TRADE_RETCODE_DONE;tradeMode=4;fillMode=1;executionMode=2;}
 public static bool Plan(SBSignal s){riskChecks++;var plan=new SBPlan();string why="";return SBPlanTrade(s,plan,ref why);}
 '@
 $tests=@'
@@ -208,6 +209,35 @@ public static int Run(){
  Fixture();InpEnableDailyRiskLock=false;fourTrades=1;Assert(!Plan(new SBSignal()),"strategy daily entry cap retained when daily loss gate disabled");
  Fixture();InpEnableDailyRiskLock=false;InpFixedVolume=1;Assert(!Plan(new SBSignal()),"per-trade monetary risk retained with daily lock disabled");
  Fixture();InpEnableDailyRiskLock=false;positions.Add(new Pos(){symbol="OTHER",volume=.2,sl=95});Assert(!Plan(new SBSignal()),"combined open-risk cap retained with daily lock disabled");
+ // New mode is strategy-specific; geometry is structural and monetary safeguards remain.
+ Fixture();InpShapeSetupBasedExits=true;
+ var structuralShape=new SBSignal(){strategy=SB_TRIANGLE,method="BREAKOUT_CONTINUATION",pattern_type=1,target=101,max_stop_points=10};
+ var structuralPlan=new SBPlan();string structuralWhy="";
+ Assert(SBPlanTrade(structuralShape,structuralPlan,ref structuralWhy),"setup Shape triangle accepts structural target below 1R and wide stop");
+ Assert(structuralPlan.tp==101 && structuralPlan.signal.rr<1 && structuralPlan.signal.max_stop_points==0,"Shape stores actual structural RR and durable zero stop-cap marker");
+ InpShapeSetupBasedExits=false;Assert(!Plan(structuralShape),"disabled mode preserves original Shape stop ceiling");
+ structuralShape.max_stop_points=1000;Assert(!Plan(structuralShape),"disabled mode preserves triangle 2R minimum");
+ Fixture();InpShapeSetupBasedExits=true;InpSMTSetupBasedExits=true;
+ Assert(!Plan(new SBSignal(){max_stop_points=10}),"Shape/SMT modes cannot relax S1 stop ceiling");
+ Assert(!Plan(new SBSignal(){strategy=SB_ORB,max_stop_points=10}),"Shape/SMT modes cannot relax ORB stop ceiling");
+ Assert(!Plan(new SBSignal(){strategy=SB_VP_POC,max_stop_points=10}),"Shape/SMT modes cannot relax S5 stop ceiling");
+ Assert(!Plan(new SBSignal(){strategy=SB_TRIANGLE,max_stop_points=10}),"legacy triangle without Shape method retains ceiling");
+ structuralShape.max_stop_points=10;structuralShape.target=101;
+ InpFixedVolume=1;Assert(!Plan(structuralShape),"setup mode cannot bypass monetary risk with wide structural stop");
+ Fixture();InpShapeSetupBasedExits=true;InpUseFixedVolume=false;structuralShape.structural_sl=80;
+ structuralPlan=new SBPlan();Assert(SBPlanTrade(structuralShape,structuralPlan,ref structuralWhy) && structuralPlan.volume==.01 && structuralPlan.risk<=25,"wide structural stop reduces risk-sized volume");
+ structuralShape.structural_sl=1;Assert(!Plan(structuralShape),"too-small risk-sized volume rejected rather than rounded up");
+ Fixture();InpShapeSetupBasedExits=true;structuralShape.structural_sl=95;structuralShape.target=101;
+ InpRoundTripCommissionPerLot=200;Assert(!Plan(structuralShape),"positive gross target cannot bypass negative net reward");
+ Fixture();InpSMTSetupBasedExits=true;InpSMTUseMinimumRR=true;smtTarget=101;
+ var structuralSMT=new SBSignal(){strategy=SB_SMT,rr=1,max_stop_points=10};
+ structuralPlan=new SBPlan();Assert(SBPlanTrade(structuralSMT,structuralPlan,ref structuralWhy) && structuralPlan.tp==101 && structuralPlan.signal.rr<1 && structuralPlan.signal.max_stop_points==0,"setup SMT uses nearby target despite legacy minimum and point cap");
+ smtTarget=100;Assert(!Plan(structuralSMT),"setup SMT still rejects wrong-side target");
+ smtTarget=101;InpRoundTripCommissionPerLot=200;Assert(!Plan(structuralSMT),"setup SMT requires positive net reward");
+ Fixture();InpSMTSetupBasedExits=true;smtTarget=101;disk[sb_account+"halt"]=1;Assert(!Plan(structuralSMT),"setup mode retains emergency halt");
+ Fixture();InpShapeSetupBasedExits=true;permissions=false;Assert(!Plan(structuralShape),"setup mode retains trading permissions");
+ Assert(SBRecordedSetupExits(SB_TRIANGLE,"SHAPE_M15_M5",0) && SBRecordedSetupExits(SB_SMT,"SMT_MTF",0),"recorded setup policy survives independently of runtime switches");
+ Assert(!SBRecordedSetupExits(SB_TRIANGLE,"LEGACY_TRIANGLE",0) && !SBRecordedSetupExits(SB_ORB,"DEFAULT",0) && !SBRecordedSetupExits(SB_TRIANGLE,"SHAPE_M15_M5",250),"old requests and other strategies cannot acquire setup-mode reconciliation");
  return checks;
 }
 '@

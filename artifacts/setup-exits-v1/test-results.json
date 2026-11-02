@@ -1,0 +1,65 @@
+{
+  "status": "PASS",
+  "native_assertions": 279,
+  "runs": [
+    {
+      "id": "setup-exits-native",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "model": "M1_OHLC",
+      "mapping_scope": "SYNTHETIC_FIXED_UTC_PLUS_3_NOT_BROKER_VERIFICATION",
+      "binary_sha256": "909D8E3C7EE579D6376B6240EAEDA07B28877413E09F82C5AF7A0DB8604FA591",
+      "status": "PASS",
+      "checks": 48
+    },
+    {
+      "id": "shape-regression",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "model": "M1_OHLC",
+      "mapping_scope": "SYNTHETIC_FIXED_UTC_PLUS_3_NOT_BROKER_VERIFICATION",
+      "binary_sha256": "1F784172EF7F46C762757D38F369E3750CC8F1A27A32EBD40AC6C4A1C62CC670",
+      "status": "PASS",
+      "checks": 124
+    },
+    {
+      "id": "smt-regression",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "model": "M1_OHLC",
+      "mapping_scope": "SYNTHETIC_FIXED_UTC_PLUS_3_NOT_BROKER_VERIFICATION",
+      "binary_sha256": "2E5EA33F57D18BD7E6B01C2FB93BD65AA7F81FF3E65863CA4CB1FEEFE3833D42",
+      "status": "PASS",
+      "checks": 107
+    },
+    {
+      "id": "shape-smt-structural",
+      "from": "2026.08.03",
+      "to": "2026.08.05",
+      "model": "M1_OHLC",
+      "mapping_scope": "SYNTHETIC_FIXED_UTC_PLUS_3_NOT_BROKER_VERIFICATION",
+      "binary_sha256": "E6494E9199B3C7D564D0F83A4A4C375BFE80BD74FA01C54496DAB9192C96891B",
+      "status": "PASS",
+      "rejections": [
+        "SCALPING BOT | S2_SHAPE_PATTERN | ENTRY_REJECT | symbol=XAUUSD | dir=1 id=142479584 candle=2026.08.03 21:15 entry=4037.68000000 SL=4029.60000000 TP=4037.68000000 method=SWEEP_EXTREME RR=1.000 spread=14.00 volume=0.0000 risk=0.00 pattern=3 | SHAPE_NO_OPPOSING_TARGET"
+      ]
+    },
+    {
+      "id": "shape-smt-original",
+      "from": "2026.08.03",
+      "to": "2026.08.05",
+      "model": "M1_OHLC",
+      "mapping_scope": "SYNTHETIC_FIXED_UTC_PLUS_3_NOT_BROKER_VERIFICATION",
+      "binary_sha256": "E6494E9199B3C7D564D0F83A4A4C375BFE80BD74FA01C54496DAB9192C96891B",
+      "status": "PASS",
+      "rejections": [
+        "SCALPING BOT | S2_SHAPE_PATTERN | ENTRY_REJECT | symbol=XAUUSD | dir=1 id=142479584 candle=2026.08.03 21:15 entry=4037.68000000 SL=4029.60000000 TP=0.00000000 method=SWEEP_EXTREME RR=1.000 spread=14.00 volume=0.0000 risk=0.00 pattern=3 | STOP_DISTANCE_OR_RR_INVALID"
+      ]
+    }
+  ],
+  "limitations": [
+    "Synthetic fixed UTC+3 test settings are not historical broker timezone evidence.",
+    "Native geometry/order tests use explicitly constructed setups and tester-only orders.",
+    "The two-day historical sample had no accepted entries; no profitability or live execution claim."
+  ]
+}

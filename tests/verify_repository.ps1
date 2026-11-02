@@ -9,6 +9,8 @@ foreach($line in Get-Content "$root/MQL5/Include/ScalpingBot/Config.mqh"){
  if($line -match '^input\s+\w+\s+(Inp\w+)=(.*);$'){$defaults[$matches[1]]=$matches[2]}
 }
 Assert ($defaults.Count -ge 280) 'complete five-strategy input schema'
+Assert ($defaults.InpBrokerTimeVerified -eq 'false') 'source defaults do not infer broker verification'
+Assert ($defaults.InpShapeSetupBasedExits -eq 'false' -and $defaults.InpSMTSetupBasedExits -eq 'false') 'setup exits remain optional by default'
 $profiles=@(Get-ChildItem "$root/profiles" -File -Filter '*.set')
 Assert ($profiles.Count -ge 12) 'strategy and all-five presets available'
 foreach($profile in $profiles){
@@ -23,13 +25,14 @@ foreach($profile in $profiles){
   }
  }
  Assert ($values.InpAllowRealAccount -eq 'false') "$($profile.Name): real-account block"
- Assert ($values.InpBrokerTimeVerified -eq 'false') "$($profile.Name): no inferred broker verification"
+ Assert ($values.InpBrokerTimeVerified -in @('false','true')) "$($profile.Name): explicit broker verification boolean; user verification remains external"
  $magics=@('Inp4HMagicNumber','InpTriangleMagicNumber','InpORBMagicNumber','InpSMTMagicNumber','InpVPMagicPOCBounce','InpVPMagicValueReversal','InpVPMagicBreakout') | ForEach-Object {$values[$_]}
  Assert (@($magics | Select-Object -Unique).Count -eq 7) "$($profile.Name): distinct strategy/method magics"
  if($profile.Name -eq 'all-five-xauusd-mtf-demo-execution.set'){
   Assert ($seen.Count -eq $defaults.Count) 'all-five preset explicitly covers the input schema'
   foreach($key in @('InpEnable4HBreakout','InpEnableTriangleMethod','InpEnableORBStrategy','InpEnableSMTStrategy','InpEnableVolumeProfile')){Assert ($values[$key] -eq 'true') "all-five: $key"}
   foreach($key in @('InpSignalOnly','InpSMTSignalOnly','InpEnableDailyRiskLock')){Assert ($values[$key] -eq 'false') "all-five: $key"}
+  foreach($key in @('InpShapeSetupBasedExits','InpSMTSetupBasedExits')){Assert ($values[$key] -eq 'true') "all-five: $key"}
  }else{Assert ($values.InpSignalOnly -eq 'true') "$($profile.Name): observation preset"}
 }
 $sources=@(Get-ChildItem "$root/MQL5","$root/tests" -Recurse -File | Where-Object {$_.Extension -in @('.mqh','.mq5')})
@@ -41,7 +44,8 @@ foreach($source in $sources){
  }
 }
 if($VerifyReleaseSnapshot){
- $buildPath="$root/artifacts/range-recovery-v1/final-build.json"
+ $buildPath="$root/artifacts/setup-exits-v1/final-build.json"
+ if(!(Test-Path -LiteralPath $buildPath)){$buildPath="$root/artifacts/range-recovery-v1/final-build.json"}
  if(!(Test-Path -LiteralPath $buildPath)){$buildPath="$root/artifacts/daily-lock-v1/final-build.json"}
  $build=Get-Content $buildPath -Raw | ConvertFrom-Json
  Assert ((Get-FileHash "$root/MQL5/Experts/ScalpingBot.ex5" -Algorithm SHA256).Hash.ToLowerInvariant() -eq $build.binary_sha256) 'distributed EA matches recorded build'

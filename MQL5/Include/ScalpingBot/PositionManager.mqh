@@ -66,9 +66,17 @@ void SBManagePositions()
       if(tick<=0 || sl<=0 || tp<=0 || direction*(entry-sl)<=0 || !OrderCalcProfit(direction>0?ORDER_TYPE_BUY:ORDER_TYPE_SELL,_Symbol,volume,entry,sl,loss))
         {protected_all=false;SBEmergencyClose(ticket,strategy,direction,"Own position lacks valid SL/TP; broker reconciliation required");continue;}
       double risk=MathMax(0,-loss)+volume*InpRoundTripCommissionPerLot;
+      bool setup_exits=false;int exit_metadata=-1;
+      if(strategy==SB_SMT || strategy==SB_TRIANGLE)
+        {
+         exit_metadata=SBLedgerRelation(0,(ulong)PositionGetInteger(POSITION_IDENTIFIER));
+         if(exit_metadata>=0)setup_exits=SBRecordedSetupExits(strategy,sb_ledger_meta[exit_metadata].profile,sb_ledger_meta[exit_metadata].plan.signal.max_stop_points);
+         else if(SBSetupBasedExits(strategy,strategy==SB_TRIANGLE?"BREAKOUT_CONTINUATION":""))
+           {protected_all=false;SBHalt("Setup-based position metadata unavailable; inspect journal/history before reset");continue;}
+        }
       double max_stop=strategy==SB_SMT?InpSMTMaxStopPoints:(strategy==SB_ORB?InpORBMaxStopPoints:(strategy==SB_4H?Inp4HMaxStopPoints:InpTriangleMaxStopPoints));
       if(SBIsVP(strategy))max_stop=InpVPMaxStopPoints;
-      if(risk>AccountInfoDouble(ACCOUNT_EQUITY)*InpMaxTradeRiskPercent/100+1e-8 || MathAbs(entry-sl)/_Point>max_stop+0.1)
+      if(risk>AccountInfoDouble(ACCOUNT_EQUITY)*InpMaxTradeRiskPercent/100+1e-8 || (!setup_exits && MathAbs(entry-sl)/_Point>max_stop+0.1))
         {protected_all=false;SBEmergencyClose(ticket,strategy,direction,"Actual-fill risk/stop limit exceeded");continue;}
       if(SBIsVP(strategy) && risk>AccountInfoDouble(ACCOUNT_EQUITY)*InpVPMaxRiskPercent/100+1e-8)
         {protected_all=false;SBEmergencyClose(ticket,strategy,direction,"Volume Profile actual-fill risk cap exceeded");continue;}
@@ -78,7 +86,7 @@ void SBManagePositions()
          bool reward_ok=OrderCalcProfit(direction>0?ORDER_TYPE_BUY:ORDER_TYPE_SELL,_Symbol,volume,entry,tp,reward);
          double net_reward=reward-volume*InpRoundTripCommissionPerLot;
          if(!reward_ok || risk>AccountInfoDouble(ACCOUNT_EQUITY)*InpSMTMaxTradeRiskPercent/100+1e-8 ||
-            !SBSMTFilledRRValid(entry,sl,tp,direction,net_reward,risk,InpSMTUseMinimumRR,InpSMTMinimumRR))
+            !SBSMTFilledRRValid(entry,sl,tp,direction,net_reward,risk,InpSMTUseMinimumRR && !setup_exits,InpSMTMinimumRR))
            {protected_all=false;SBEmergencyClose(ticket,strategy,direction,"SMT actual-fill RR/risk invalid; dynamic target must not be moved farther");}
          continue; // SMT never enters the legacy fixed-R TP repair path.
         }
@@ -88,11 +96,11 @@ void SBManagePositions()
          if(metadata<0 && !InpShapeLegacyTriangle)
            {protected_all=false;SBHalt("Shape position metadata unavailable; inspect journal/history before reset");continue;}
          if(metadata>=0 && StringLen(sb_ledger_meta[metadata].plan.signal.method)>0 && sb_ledger_meta[metadata].profile!="LEGACY_TRIANGLE" &&
-            (sb_ledger_meta[metadata].plan.signal.method=="TRAP_REVERSAL" || sb_ledger_meta[metadata].plan.signal.family!="TRIANGLE"))
+            (setup_exits || sb_ledger_meta[metadata].plan.signal.method=="TRAP_REVERSAL" || sb_ledger_meta[metadata].plan.signal.family!="TRIANGLE"))
            {
             SBPlan original=sb_ledger_meta[metadata].plan;
             double actual_rr=direction*(tp-entry)/(direction*(entry-sl));
-            double minimum=original.signal.method=="TRAP_REVERSAL"?(InpShapeReversalMinRREnabled?InpShapeReversalMinRR:0):InpShapeContinuationMinRR;
+            double minimum=SBShapeMinimumRR(original.signal.method,setup_exits);
             double reward=0;bool reward_ok=OrderCalcProfit(direction>0?ORDER_TYPE_BUY:ORDER_TYPE_SELL,_Symbol,volume,entry,tp,reward);
             if(!reward_ok || reward-volume*InpRoundTripCommissionPerLot<=0 || (risk>0 && (reward-volume*InpRoundTripCommissionPerLot)/risk<minimum) || actual_rr<=0 || actual_rr<minimum || MathAbs(tp-original.tp)>tick*0.1)
               {protected_all=false;SBEmergencyClose(ticket,strategy,direction,"Shape actual-fill structural target/RR invalid; no outward TP repair");}

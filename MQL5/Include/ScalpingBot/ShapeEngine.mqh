@@ -52,7 +52,7 @@ bool SBShapeNearestTarget(int direction,double entry,datetime decision,double &t
      }
    return tp>0 && direction*(tp-entry)>0;
   }
-bool SBShapeDynamic(SBSignal &s){return s.strategy==SB_TRIANGLE && StringLen(s.method)>0 && (s.method=="TRAP_REVERSAL" || s.pattern_type>3);}
+bool SBShapeDynamic(SBSignal &s){return s.strategy==SB_TRIANGLE && StringLen(s.method)>0 && (SBSetupBasedExits(s.strategy,s.method) || s.method=="TRAP_REVERSAL" || s.pattern_type>3);}
 bool SBShapePlanGeometry(SBSignal &s,double entry,double sl,double &tp,string &why)
   {
    double distance=s.direction*(entry-sl);if(distance<=0){why="SHAPE_INVALID_STOP";return false;}
@@ -61,7 +61,7 @@ bool SBShapePlanGeometry(SBSignal &s,double entry,double sl,double &tp,string &w
    else tp=s.target;
    tp=SBRoundPrice(tp,SymbolInfoDouble(_Symbol,SYMBOL_TRADE_TICK_SIZE),-s.direction);
    double rr=s.direction*(tp-entry)/distance;
-   double minimum=s.method=="TRAP_REVERSAL"?(InpShapeReversalMinRREnabled?InpShapeReversalMinRR:0):InpShapeContinuationMinRR;
+   double minimum=SBShapeMinimumRR(s.method,SBSetupBasedExits(s.strategy,s.method));
    if(tp<=0 || rr<=0 || rr<minimum){why="SHAPE_NEAREST_TARGET_RR_REJECT";return false;}
    return true;
   }

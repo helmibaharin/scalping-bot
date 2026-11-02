@@ -4,6 +4,7 @@
 #property description "Independent 4H reversal, triangle, ORB and SMT EA. Research/demo first; signal-only by default."
 #include "../Include/ScalpingBot/Config.mqh"
 #include "../Include/ScalpingBot/StrategyInterface.mqh"
+#include "../Include/ScalpingBot/SetupExitPolicy.mqh"
 #include "../Include/ScalpingBot/Rules.mqh"
 #include "../Include/ScalpingBot/NewYorkTime.mqh"
 #include "../Include/ScalpingBot/Diagnostics.mqh"
@@ -118,6 +119,9 @@ void SBRun()
   }
 int OnInit()
   {
+   Print("SCALPING BOT | SETUP_EXIT_POLICY | Shape=",InpShapeSetupBasedExits?"STRUCTURAL_ANY_POSITIVE_NET_REWARD":"EXISTING_LIMITS",
+    " SMT=",InpSMTSetupBasedExits?"STRUCTURAL_ANY_POSITIVE_NET_REWARD":"EXISTING_LIMITS",
+    " | Enabled mode ignores minimum RR and fixed point stop caps for that strategy; money-risk, sizing, broker and confirmation checks remain active");
    Print("SCALPING BOT | DAILY_RISK_POLICY | daily_baseline_and_loss_lock=",InpEnableDailyRiskLock?"ENABLED":"DISABLED_BY_INPUT",
     " | Max drawdown, emergency, per-trade/open-risk limits and strategy entry caps remain active");
    string mapping_error="";

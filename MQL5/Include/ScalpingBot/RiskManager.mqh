@@ -70,6 +70,8 @@ bool SBStops(int direction,double sl,double tp,MqlTick &q,bool modification=fals
 bool SBPlanTrade(SBSignal &signal,SBPlan &plan,string &why)
   {
    ZeroMemory(plan);plan.signal=signal;plan.magic=SBMagic(signal.strategy);
+   bool setup_exits=SBSetupBasedExits(signal.strategy,signal.method);
+   if(setup_exits)plan.signal.max_stop_points=0; // Durable mode marker for actual-fill/restart reconciliation.
    MqlTick q;datetime utc;
    if(!SBFreshQuote(q,utc,why))return false;
    if(!sb_state_ok || SBGet(sb_account+"halt")!=0 || SBGet(sb_account+"intent")!=0 || InpEmergency){why="EMERGENCY_OR_UNRESOLVED_INTENT";return false;}
@@ -117,7 +119,7 @@ bool SBPlanTrade(SBSignal &signal,SBPlan &plan,string &why)
    if(tick<=0){why="INVALID_TICK_SIZE";return false;}
    plan.sl=SBRoundPrice(signal.structural_sl,tick,-signal.direction);
    double distance=signal.direction*(plan.entry-plan.sl);
-   if(distance<tick || distance/_Point>signal.max_stop_points || (signal.strategy!=SB_SMT && !SBIsVP(signal.strategy) && !SBShapeDynamic(signal) && signal.rr<2) || (SBIsVP(signal.strategy) && signal.rr<=0)){why="STOP_DISTANCE_OR_RR_INVALID";return false;}
+   if(!MathIsValidNumber(distance) || distance<tick || (!setup_exits && distance/_Point>signal.max_stop_points) || (signal.strategy!=SB_SMT && !SBIsVP(signal.strategy) && !SBShapeDynamic(signal) && signal.rr<2) || (SBIsVP(signal.strategy) && signal.rr<=0)){why="STOP_DISTANCE_OR_RR_INVALID";return false;}
    if(signal.strategy==SB_SMT)
      {
       if(!SBSMTPlanGeometry(signal,plan.entry,plan.sl,plan.tp,why))return false;
@@ -126,7 +128,7 @@ bool SBPlanTrade(SBSignal &signal,SBPlan &plan,string &why)
    else if(SBShapeDynamic(signal))
      {if(!SBShapePlanGeometry(signal,plan.entry,plan.sl,plan.tp,why))return false;plan.signal.rr=signal.direction*(plan.tp-plan.entry)/distance;}
    else plan.tp=SBRoundPrice(SBTarget(signal.direction,plan.entry,plan.sl,signal.rr),tick,signal.direction);
-   if(signal.strategy==SB_TRIANGLE && StringLen(signal.method)>0 && plan.signal.rr<(signal.method=="TRAP_REVERSAL"?(InpShapeReversalMinRREnabled?InpShapeReversalMinRR:0):InpShapeContinuationMinRR)){why="SHAPE_RR_BELOW_MINIMUM";return false;}
+   if(signal.strategy==SB_TRIANGLE && StringLen(signal.method)>0 && plan.signal.rr<SBShapeMinimumRR(signal.method,setup_exits)){why="SHAPE_RR_BELOW_MINIMUM";return false;}
    if(!SBStops(signal.direction,plan.sl,plan.tp,q)){why="BROKER_STOP_LEVEL";return false;}
    if(SBIsVP(signal.strategy) && !SBStops(signal.direction,plan.sl,plan.tp,q,true)){why="VP_BROKER_FREEZE_LEVEL";return false;}
    if(signal.strategy==SB_SMT && !SBStops(signal.direction,plan.sl,plan.tp,q,true)){why="SMT_BROKER_FREEZE_LEVEL";return false;}
@@ -139,7 +141,7 @@ bool SBPlanTrade(SBSignal &signal,SBPlan &plan,string &why)
    double loss=-one_lot+InpRoundTripCommissionPerLot,equity=AccountInfoDouble(ACCOUNT_EQUITY);
    if(SBShapeDynamic(signal))
      {
-      double reward=0,shape_minimum=signal.method=="TRAP_REVERSAL"?(InpShapeReversalMinRREnabled?InpShapeReversalMinRR:0):InpShapeContinuationMinRR;
+      double reward=0,shape_minimum=SBShapeMinimumRR(signal.method,setup_exits);
       if(!OrderCalcProfit(type,_Symbol,1,worst_entry,plan.tp,reward) || reward-InpRoundTripCommissionPerLot<=0 || (reward-InpRoundTripCommissionPerLot)/loss<shape_minimum)
         {why="SHAPE_COST_ADJUSTED_RR_INVALID";return false;}
      }
@@ -147,7 +149,7 @@ bool SBPlanTrade(SBSignal &signal,SBPlan &plan,string &why)
      {
       double reward=0;
       if(!OrderCalcProfit(type,_Symbol,1,worst_entry,plan.tp,reward) || reward-InpRoundTripCommissionPerLot<=0 ||
-         (InpSMTUseMinimumRR && (reward-InpRoundTripCommissionPerLot)/loss<InpSMTMinimumRR))
+         (InpSMTUseMinimumRR && !setup_exits && (reward-InpRoundTripCommissionPerLot)/loss<InpSMTMinimumRR))
         {why="SMT_COST_ADJUSTED_RR_INVALID";return false;}
      }
    double step=SymbolInfoDouble(_Symbol,SYMBOL_VOLUME_STEP),minimum=SymbolInfoDouble(_Symbol,SYMBOL_VOLUME_MIN),maximum_volume=SymbolInfoDouble(_Symbol,SYMBOL_VOLUME_MAX);
@@ -165,6 +167,7 @@ bool SBPlanTrade(SBSignal &signal,SBPlan &plan,string &why)
    double margin;
    if(!OrderCalcMargin(type,_Symbol,plan.volume,plan.entry,margin) || AccountInfoDouble(ACCOUNT_MARGIN_FREE)-margin<equity*InpMinFreeMarginPercent/100)
      {why="MARGIN_RESERVE";return false;}
+   if(setup_exits)SBEvent(signal.strategy,"SETUP_BASED_EXIT_PLAN",StringFormat("entry=%.8f structuralSL=%.8f structuralTP=%.8f actual_price_RR=%.6f volume=%.4f estimatedRisk=%.2f minimumRR=OFF pointStopCap=OFF journalStopCap=0",plan.entry,plan.sl,plan.tp,plan.signal.rr,plan.volume,plan.risk));
    return true;
   }
 #endif

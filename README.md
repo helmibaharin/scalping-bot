@@ -21,10 +21,13 @@ InpSignalOnly=false
 InpSMTSignalOnly=false
 InpEnableDailyRiskLock=false
 InpAllowRealAccount=false
-InpBrokerTimeVerified=false
+InpShapeSetupBasedExits=true
+InpSMTSetupBasedExits=true
 ```
 
 The daily opt-out disables both the first-midnight baseline wait and daily-loss entry limit. Emergency, maximum drawdown, per-trade/open-risk limits, broker constraints, strategy entry caps and cooldowns remain active. The source default keeps the daily lock enabled; the other eleven profiles retain observation/signal-only settings. [Daily lock behavior and migration](docs/DAILY_RISK_LOCK.md).
+
+Shape and SMT in this preset use their setup-based SL/TP distances and accept any positive estimated net reward, with risk-based sizing and money-risk protections retained. Their fixed point stop ceilings and minimum RR thresholds are overridden only in this optional mode. S1, ORB, Volume Profile and legacy Triangle keep their existing rules. Source defaults leave both new modes off. [Inputs, exact behaviour, restart policy and validation](docs/SETUP_BASED_EXITS.md).
 
 Every supplied profile requires externally verified broker-time settings before decisions are permitted. `InpBrokerTimeVerified=true` is an explicit acknowledgement, not automatic timezone detection. Current server-clock observations do not establish historical DST policy. Built-in fixed/EU/US rules and an explicit UTC transition table are supported. [Broker-time configuration and diagnostics](docs/BROKER_TIME.md).
 
@@ -57,7 +60,7 @@ The source-workspace preservation verifier is used when its local snapshots are 
 
 ## Validation and local research
 
-The latest range-recovery and chart-level changes compiled with zero errors/warnings. Seven native XAUUSD tester runs passed, including 78 range/restart/chart assertions, 69 timezone assertions and 100 ORB assertions. The existing 98 risk/execution assertions, 243 rule assertions and 18 Python tests also passed. [Current findings, exact historical dates and limitations](docs/HISTORICAL_RANGE_RECOVERY.md). These are engineering checks, not proof of a trading edge. The [daily-lock validation summary](artifacts/daily-lock-v1/VALIDATION.md) describes its earlier build.
+The latest Shape/SMT setup-exit change compiled with zero errors/warnings and passed five native XAUUSD runs: 48 new mode/restart/fill assertions, 124 existing Shape assertions and 107 existing SMT assertions. The 117 risk/execution assertions, 243 rule assertions and 18 Python tests also passed. [Current results and limitations](docs/SETUP_BASED_EXITS.md). Earlier [historical range-recovery results](docs/HISTORICAL_RANGE_RECOVERY.md) and [daily-lock results](artifacts/daily-lock-v1/VALIDATION.md) describe their specific builds. These are engineering checks, not proof of a trading edge.
 
 Other validation records describe their specific historical builds: [broker mapping](docs/BROKER_TIME_VALIDATION.md), [Volume Profile](docs/VOLUME_PROFILE_VALIDATION.md), [Shape](docs/SHAPE_VALIDATION.md), and [SMT](docs/SMT_VALIDATION.md). Their market samples are short; mixed/generated tick periods and unverified assumptions are disclosed in those reports.
 
@@ -69,7 +72,8 @@ Native tester preparation, replay and release-packaging helpers retain the origi
 - `profiles/`: twelve presets with real-account trading blocked.
 - `tests/`: production-function adapters, native fixtures, offline reporting and local tester/research tools.
 - `docs/`: strategy rules, inputs, installation, validation and limitations.
-- `artifacts/range-recovery-v1/`: compact current validation and build-fingerprint records only.
+- `artifacts/setup-exits-v1/`: compact current validation and build-fingerprint records only.
+- `artifacts/range-recovery-v1/`: compact validation records for the earlier range-recovery change.
 - `artifacts/daily-lock-v1/`: compact validation records for the earlier daily-lock change.
 
 Terminal executables, credentials, account/session files, downloaded market data, raw account/trade logs, portable terminal caches, historical release ZIPs and bulky reports are excluded from Git. Generate local runtime/research outputs under `artifacts/`.

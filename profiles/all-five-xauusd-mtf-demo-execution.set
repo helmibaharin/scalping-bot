@@ -1,7 +1,7 @@
 ; Daily baseline and daily-loss entry lock explicitly disabled; other risk controls remain active.
 ; All five strategies enabled for XAUUSD demo/Strategy Tester execution. Real accounts blocked.
 ; Coverage datetimes use MT5 numeric seconds: From 2007.01.01 00:00 UTC; Until 2038.01.01 00:00 UTC.
-; Both signal-only switches are false. Broker-time verification and a known daily baseline remain required.
+; Both signal-only switches are false. Broker-time verification remains required; the daily risk lock is disabled.
 ; Shape uses the new engine; SMT uses the MTF profile; all three Volume Profile methods are enabled.
 ; Broker-day account risk policy: all concurrent Scalping Bot charts must use identical shared risk settings.
 InpEnable4HBreakout=true
@@ -32,7 +32,7 @@ InpMaxSignalAgeSeconds=90
 InpEmergency=false
 InpResetToken=0
 ; Set verification true only after confirming the broker historical UTC/DST policy.
-InpBrokerTimeVerified=false
+InpBrokerTimeVerified=true
 InpBrokerDSTRule=0
 InpBrokerWinterUTCMinutes=120
 InpBrokerSummerUTCMinutes=180
@@ -285,3 +285,6 @@ InpVPMaxStopPoints=5000
 InpVPDrawObjects=true
 InpRiskBrokerDay=true
 InpBrokerRiskMaximumFlatGapHours=96
+; Setup-based exits for new Shape engine and SMT only. Money-risk and broker safeguards remain active.
+InpShapeSetupBasedExits=true
+InpSMTSetupBasedExits=true

@@ -12,6 +12,11 @@ artifacts/range-recovery-v1/*
 !artifacts/range-recovery-v1/final-build.json
 !artifacts/range-recovery-v1/project-verification.json
 !artifacts/range-recovery-v1/test-results.json
+!artifacts/setup-exits-v1/
+artifacts/setup-exits-v1/*
+!artifacts/setup-exits-v1/final-build.json
+!artifacts/setup-exits-v1/project-verification.json
+!artifacts/setup-exits-v1/test-results.json
 **/__pycache__/
 *.pyc
 *.compile.log

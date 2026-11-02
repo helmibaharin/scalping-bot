@@ -206,6 +206,8 @@ input double InpSMTStopATRBuffer=0.05;
 input double InpSMTStopSpreadMultiplier=1.0;
 input double InpSMTMaxStopPoints=3000;
 input bool InpSMTDynamicTP=true;
+// Structural SL/zone TP, any positive net reward; sizing and account risk still apply.
+input bool InpSMTSetupBasedExits=false;
 input double InpSMTTPBufferPoints=5;
 input bool InpSMTUseMinimumRR=true;
 input double InpSMTMinimumRR=1.0;
@@ -244,6 +246,8 @@ input double InpShapeSweepPoints=2;
 input double InpShapeTPBufferPoints=5;
 input double InpShapeContinuationMinRR=2.0;
 input bool InpShapeReversalMinRREnabled=true;
+// New Shape engine only; use its structural/measured targets without a minimum R or point cap.
+input bool InpShapeSetupBasedExits=false;
 input double InpShapeReversalMinRR=1.0;
 input bool InpShapeDraw=true;
 input group "Strategy 5 Volume Profile: disabled in existing presets"

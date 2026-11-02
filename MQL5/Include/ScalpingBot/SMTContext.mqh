@@ -96,7 +96,7 @@ bool SBSMTPlanGeometry(SBSignal &signal,double entry,double sl,double &tp,string
    if(!SBSMTSelectTarget(signal.direction,entry,sb_smt_locations,TimeCurrent(),MathMax(tick,InpSMTTPBufferPoints*_Point),tick,tp,target))
      {why="SMT_NO_VALID_TP_ZONE";return false;}
    double rr;
-   if(!SBSMTRRAllows(entry,sl,tp,signal.direction,InpSMTUseMinimumRR,InpSMTMinimumRR,rr))
+   if(!SBSMTRRAllows(entry,sl,tp,signal.direction,InpSMTUseMinimumRR && !SBSetupBasedExits(SB_SMT),InpSMTMinimumRR,rr))
      {why="SMT_RR_BELOW_MINIMUM";return false;}
    SBEvent(SB_SMT,"SMT_DYNAMIC_GEOMETRY",StringFormat("PROFILE=%s SL=SWEEP TP_ZONE=%s TP=%.8f RR=%.5f entry=%.8f no_fixed_R_target=true",SBSMTProfileName(),target,tp,rr,entry));
    return true;
