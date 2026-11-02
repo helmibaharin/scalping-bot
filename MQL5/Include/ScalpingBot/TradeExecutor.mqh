@@ -10,7 +10,11 @@ bool SBDefinitiveReject(uint code)
      code==TRADE_RETCODE_NO_MONEY || code==TRADE_RETCODE_PRICE_CHANGED || code==TRADE_RETCODE_PRICE_OFF ||
      code==TRADE_RETCODE_INVALID_FILL || code==TRADE_RETCODE_LIMIT_ORDERS || code==TRADE_RETCODE_LIMIT_VOLUME;
   }
-void SBExecute(SBSignal &signal)
+// Execution stays synchronous: a fresh READY signal is planned/sent in this call.
+// The wrapper records timing after execution so telemetry cannot postpone sending.
+long sb_execution_presend_us=-1,sb_execution_broker_us=-1;
+ulong sb_execution_started_us=0;
+void SBExecuteImmediate(SBSignal &signal)
   {
    sb_execution_result=-1;sb_execution_reason="DUPLICATE_SUPPRESSED";
    if(SBConsumed(signal.strategy,signal.id)){SBEvent(signal.strategy,"DUPLICATE_SUPPRESSED",signal.id);return;}
@@ -35,7 +39,10 @@ void SBExecute(SBSignal &signal)
    if(ledger<0){SBHalt("Cannot persist trade attribution before send");return;}
    SBPut(sb_account+"intent",(double)plan.magic);SBPut(sb_account+"intent_order",0);GlobalVariablesFlush();
    if(!sb_state_ok){SBHalt("Cannot persist order intent");return;}
+   sb_execution_presend_us=(long)(GetMicrosecondCount()-sb_execution_started_us);
+   ulong broker_started=GetMicrosecondCount();
    bool sent=OrderSend(request,result);
+   sb_execution_broker_us=(long)(GetMicrosecondCount()-broker_started);
    if(!SBLedgerResult(ledger,result))SBHalt("Cannot persist order relation; recover broker history before reset");
    sb_execution_reason="ORDER_RESULT "+IntegerToString(result.retcode);
    SBLogPlan(plan,"ORDER_RESULT",StringFormat("send=%s retcode=%u order=%I64u deal=%I64u %s",sent?"true":"false",result.retcode,result.order,result.deal,result.comment));
@@ -49,5 +56,17 @@ void SBExecute(SBSignal &signal)
    else if(SBDefinitiveReject(result.retcode))SBPut(sb_account+"intent",0);
    else SBHalt("Order outcome uncertain; inspect broker orders/deals before reset");
    GlobalVariablesFlush();
+  }
+void SBExecute(SBSignal &signal)
+  {
+   sb_execution_started_us=GetMicrosecondCount();
+   sb_execution_presend_us=-1;sb_execution_broker_us=-1;
+   datetime attempted=TimeCurrent();
+   datetime confirmed=signal.entry_confirmation>0?signal.entry_confirmation:signal.candle+SBSignalSeconds(signal.strategy);
+   SBExecuteImmediate(signal);
+   ulong elapsed=GetMicrosecondCount()-sb_execution_started_us;
+   SBEvent(signal.strategy,"ENTRY_TIMING",StringFormat("id=%s confirmed=%s attempted=%s confirmation_age_seconds=%I64d processing_us=%I64u presend_us=%I64d broker_us=%I64d result=%d reason=%s",
+     signal.id,TimeToString(confirmed,TIME_DATE|TIME_SECONDS),TimeToString(attempted,TIME_DATE|TIME_SECONDS),
+     (long)(attempted-confirmed),elapsed,sb_execution_presend_us,sb_execution_broker_us,sb_execution_result,sb_execution_reason));
   }
 #endif

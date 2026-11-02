@@ -9,7 +9,7 @@ $vp=Get-Content "$inc/VolumeProfilePolicy.mqh" -Raw
 $vp=$vp.Substring($vp.IndexOf('bool SBVPAccountingAllows'),$vp.IndexOf('int SBVPPositions')-$vp.IndexOf('bool SBVPAccountingAllows'))+$vp.Substring($vp.IndexOf('bool SBVPEntryGuard'))
 $policy=Get-Content "$inc/SetupExitPolicy.mqh" -Raw
 $code=($policy+$rules+$vp+$risk+$execution) -replace '(?m)^#.*$',''
-$code=$code -replace '\bdatetime\b','long' -replace '(?m)^(bool|int|double|void|string) ','public static $1 '
+$code=$code -replace '\bdatetime\b','long' -replace '(?m)^(bool|int|double|void|string|long|ulong) ','public static $1 '
 $code=$code -replace 'double &risk','ref double risk' -replace 'int &side','ref int side' -replace 'double &extreme','ref double extreme'
 $code=$code -replace 'SBTradesTodayChecked\(signal.strategy,midnight,TimeCurrent\(\),last_fill,count_reason\)','SBTradesTodayChecked(signal.strategy,midnight,TimeCurrent(),ref last_fill,ref count_reason)'
 $code=$code -replace 'ENUM_ORDER_TYPE_FILLING &fill','ref int fill' -replace '\bENUM_ORDER_TYPE\b','int'
@@ -59,6 +59,9 @@ public static bool SBSMTRevalidatePlan(SBPlan p,ref string why){return smtRevali
 public const int SB_4H=1,SB_TRIANGLE=2,PERIOD_M5=5,ACCOUNT_TRADE_MODE=1,ACCOUNT_TRADE_MODE_REAL=2,ACCOUNT_MARGIN_MODE=3,ACCOUNT_MARGIN_MODE_RETAIL_HEDGING=4;
 public const int SB_ORB=3;public static int InpORBMaxOpenPositions=1,InpORBMaxTradesPerNYDay=2,orbTrades=0;
 public static int SBSignalSeconds(int s){return 300;}
+public const int TIME_DATE=1,TIME_SECONDS=4;
+public static ulong GetMicrosecondCount(){return (ulong)System.Diagnostics.Stopwatch.GetTimestamp();}
+public static string TimeToString(long t,int flags){return t.ToString();}
 public static string SBOrderPrefix(int s,int mode=0){return s==3?(mode==2?"SBOF.":"SBOC."):(s==1?"SB4.":"SBT.");}
 public static bool SBORBExecutionGuard(SBSignal s,double e,double sl,double tp,ref string why){return true;} // Real context tested by native ORB fixture.
 public const int ACCOUNT_TRADE_ALLOWED=5,ACCOUNT_TRADE_EXPERT=6,TERMINAL_TRADE_ALLOWED=7,MQL_TRADE_ALLOWED=8,ACCOUNT_EQUITY=9,ACCOUNT_MARGIN_FREE=10;
@@ -80,7 +83,7 @@ public static bool hedge=true,real=false,permissions=true,session=true,fresh=tru
 public static long tradeMode=4,fillMode=1,executionMode=2;public static double equity=10000,free=9000,spread=.2,minVolume=.01,maxVolume=100,step=.01,volumeLimit=0,stops=0,freeze=0;
 public static int fourTrades=0,triangleTrades=0,sends=0,riskChecks=0,checks=0;public static long lastFill=0;public static uint sendCode=TRADE_RETCODE_DONE;
 public class MqlTick {public double bid=100,ask=100.2;}
-public class SBSignal {public double vp_atr=10,vp_poc=100,vp_vah=110,vp_val=90;public int pattern_type=0;public string method="";public double target=0;public int strategy=1,direction=1,orb_mode=0;public long candle=9700;public string id="setup1",sl_method="BREAKOUT_EXTREME";public double structural_sl=95,rr=2,max_stop_points=1000;}
+public class SBSignal {public double vp_atr=10,vp_poc=100,vp_vah=110,vp_val=90;public int pattern_type=0;public string method="";public double target=0;public int strategy=1,direction=1,orb_mode=0;public long candle=9700,entry_confirmation=0;public string id="setup1",sl_method="BREAKOUT_EXTREME";public double structural_sl=95,rr=2,max_stop_points=1000;}
 public class SBPlan {public SBSignal signal;public ulong magic;public double entry,sl,tp,volume,risk,spread;}
 public class MqlTradeRequest {public int action,type,type_filling,deviation;public string symbol,comment;public ulong magic;public double volume,price,sl,tp;}
 public class MqlTradeCheckResult {public uint retcode=0;public double margin_free=9000;public string comment="";}
@@ -124,6 +127,16 @@ public static bool Plan(SBSignal s){riskChecks++;var plan=new SBPlan();string wh
 '@
 $tests=@'
 public static int Run(){
+ // Exercise every strategy/method through the real synchronous executor. Only
+ // broker APIs and the monotonic clock are mocked; no future tick is supplied.
+ for(int strategy=1;strategy<=7;strategy++){
+  Fixture();var immediate=new SBSignal(){strategy=strategy,vp_val=100,vp_vah=100};SBExecute(immediate);
+  Assert(sends==1 && sb_execution_result==2 && sb_execution_presend_us>=0 && sb_execution_broker_us>=0,"strategy/method sends in its READY call: "+strategy);
+  Fixture();InpSignalOnly=true;SBExecute(new SBSignal(){strategy=strategy,vp_val=100,vp_vah=100});
+  Assert(sends==0 && sb_execution_result==1 && sb_execution_presend_us==-1 && sb_execution_broker_us==-1,"signal-only remains immediate and cannot send: "+strategy);
+  Fixture();permissions=false;SBExecute(new SBSignal(){strategy=strategy});
+  Assert(sends==0 && sb_execution_result==-1 && sb_execution_presend_us==-1,"risk rejection is final in this call without deferred retry: "+strategy);
+ }
  Fixture();Assert(Plan(new SBSignal()),"valid fixed-volume BUY");
  var sell=new SBSignal();sell.direction=-1;sell.structural_sl=105;Assert(Plan(sell),"valid SELL");
  Fixture();real=true;Assert(!Plan(new SBSignal()),"real accounts denied by default");InpAllowRealAccount=true;Assert(Plan(new SBSignal()),"explicit real permission gating");

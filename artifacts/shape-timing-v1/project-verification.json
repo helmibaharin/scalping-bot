@@ -1,0 +1,16 @@
+{
+  "status": "PASS",
+  "preserved_project_files": 125,
+  "protected_parent_files": 219,
+  "changed_existing_files": [
+    "MQL5/Include/ScalpingBot/ShapeEngine.mqh",
+    "MQL5/Include/ScalpingBot/ShapeRuntime.mqh",
+    "MQL5/Include/ScalpingBot/ShapeTypes.mqh",
+    "tests/verify_project.ps1",
+    "tests/verify_repository.ps1"
+  ],
+  "input_defaults_and_profiles": "UNCHANGED",
+  "risk_execution_setup_exits": "UNCHANGED",
+  "other_strategies": "S1/S3/SMT/S5 engines unchanged",
+  "confirmation": "two right-hand M15 candles retained; close-only crossing added at confirmation boundary"
+}

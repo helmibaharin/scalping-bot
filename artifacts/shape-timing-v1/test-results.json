@@ -1,0 +1,68 @@
+{
+  "status": "PASS",
+  "native_assertions": 159,
+  "tester_runs": [
+    {
+      "id": "timing-native",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "model": "M1_OHLC",
+      "mapping_scope": "SYNTHETIC_FIXED_UTC_PLUS_2_NOT_BROKER_VERIFICATION",
+      "binary_sha256": "69D49AD6A07A0E468CE5BDC39979941534C0849744F1890383DB1BFE3C29F1DB",
+      "status": "PASS",
+      "checks": 27
+    },
+    {
+      "id": "shape-regression",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "model": "M1_OHLC",
+      "mapping_scope": "SYNTHETIC_FIXED_UTC_PLUS_2_NOT_BROKER_VERIFICATION",
+      "binary_sha256": "232D61717553638E74EEA4D72557480D6ABD9D779EE83A9E4AAA9FF8247C67A2",
+      "status": "PASS",
+      "checks": 124
+    },
+    {
+      "id": "shape-continuous",
+      "from": "2026.08.03",
+      "to": "2026.08.05",
+      "model": "M1_OHLC",
+      "mapping_scope": "SYNTHETIC_FIXED_UTC_PLUS_2_NOT_BROKER_VERIFICATION",
+      "binary_sha256": "396875676297DF962EECD359A9CC89836D3473FD31BF43C6FDD02635431965F3",
+      "status": "PASS"
+    }
+  ],
+  "unavailable_tester_attempts": [
+    {
+      "id": "timing-screenshot",
+      "status": "NOT_STARTED",
+      "reason": "MT5 rejected future end date for same-day screenshot sample; read-only native replay used instead."
+    }
+  ],
+  "screenshot_native_replay": {
+    "status": "PASS",
+    "checks": 8,
+    "failures": 0,
+    "cutoff_broker": "2026.11.02 13:15",
+    "pattern_id": "1357682230",
+    "mode": "READ_ONLY_NATIVE_CLOSED_HISTORY_REPLAY"
+  },
+  "screenshot_inputs": {
+    "m15": {
+      "count": 241,
+      "sha256": "01744957195f58da77e1a66ccdce1577034f458f26b5bcfeb7a1ffe2f2bcc121",
+      "latest_open_broker_seconds": 1793624400
+    },
+    "m5": {
+      "count": 2,
+      "sha256": "f57c30075d79fc75342cbc6a07f3fa726242605d557081a19ae9d97fca059a26",
+      "latest_open_broker_seconds": 1793625000
+    }
+  },
+  "limits": [
+    "Same-day screenshot verified by native read-only closed-history replay, not a successful full-day tester run.",
+    "No retroactive trade on the screenshot breakout, which occurred before pivot confirmation.",
+    "Synthetic test broker mappings do not establish historical timezone verification.",
+    "M1 OHLC tests are engineering validation, not profitability or live-fill validation."
+  ]
+}

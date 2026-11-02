@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "changed_existing_files": [
+    "MQL5/Include/ScalpingBot/RiskManager.mqh",
+    "MQL5/Include/ScalpingBot/SmartMoneyTrap.mqh",
+    "MQL5/Include/ScalpingBot/SMTEngine.mqh",
+    "MQL5/Include/ScalpingBot/SMTTypes.mqh",
+    "tests/prepare_decision_timing_tests.ps1",
+    "tests/report_decision_timing.py",
+    "tests/verify_project.ps1",
+    "tests/verify_repository.ps1"
+  ],
+  "preserved_project_files": 104,
+  "protected_capitalguard_files": 36,
+  "profiles_input_defaults_and_other_strategy_engines": "UNCHANGED",
+  "repair": "raw session duration, pending history retry, accurate trend rejection diagnostics"
+}

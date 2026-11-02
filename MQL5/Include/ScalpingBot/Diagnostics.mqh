@@ -30,11 +30,43 @@ void SBLogPlan(SBPlan &p,string event,string detail)
       p.signal.direction,p.signal.id,TimeToString(p.signal.candle),p.entry,p.sl,p.tp,p.signal.sl_method,p.signal.rr,p.spread,p.volume,p.risk,p.signal.pattern_type,detail));
    if(sb_log!=INVALID_HANDLE){FileWrite(sb_log,TimeToString(TimeCurrent(),TIME_DATE|TIME_SECONDS),_Symbol,SBName(p.signal.strategy),event,p.signal.direction,p.signal.id,(long)p.signal.candle,p.entry,p.sl,p.tp,p.signal.sl_method,p.signal.rr,p.spread,p.volume,p.risk,detail);FileFlush(sb_log);}
   }
+string SBRangeLineCaption(int strategy,string id)
+  {
+   if(strategy==SB_4H)
+     {
+      if(StringFind(id,".rangeHigh")>=0)return "S1 4H RANGE HIGH";
+      if(StringFind(id,".rangeLow")>=0)return "S1 4H RANGE LOW";
+     }
+   if(strategy==SB_ORB)
+     {
+      if(id=="rangeHigh")return "S3 ORB RANGE HIGH";
+      if(id=="rangeLow")return "S3 ORB RANGE LOW";
+      if(id=="H1_SWING_H")return "ORB REFERENCE - H1 SWING HIGH";
+      if(id=="H1_SWING_L")return "ORB REFERENCE - H1 SWING LOW";
+      if(id=="H4_SWING_H")return "ORB REFERENCE - H4 SWING HIGH";
+      if(id=="H4_SWING_L")return "ORB REFERENCE - H4 SWING LOW";
+     }
+   return "";
+  }
 void SBHLine(int strategy,string id,double price,color col)
   {
    if(!InpDrawObjects)return;string name=sb_object_prefix+SBName(strategy)+"."+id;
    if(ObjectFind(0,name)<0)ObjectCreate(0,name,OBJ_HLINE,0,0,price);
    ObjectSetDouble(0,name,OBJPROP_PRICE,price);ObjectSetInteger(0,name,OBJPROP_COLOR,col);
+   string caption=SBRangeLineCaption(strategy,id);if(caption=="")return;
+   string text=caption+" "+DoubleToString(price,_Digits);
+   string tooltip=text;
+   if(strategy==SB_4H)tooltip+=" | NY "+StringSubstr(id,0,10)+" 00:00-04:00";
+   ObjectSetString(0,name,OBJPROP_TEXT,text);ObjectSetString(0,name,OBJPROP_TOOLTIP,tooltip);
+   // Only the strategy ranges get persistent labels. ORB swing references keep
+   // descriptive tooltips so an overlapping grey reference cannot masquerade as S1.
+   if(strategy!=SB_4H && id!="rangeHigh" && id!="rangeLow")return;
+   string label=name+".label";datetime anchor=iTime(_Symbol,PERIOD_CURRENT,0);if(anchor==0)anchor=TimeCurrent();
+   if(ObjectFind(0,label)<0)ObjectCreate(0,label,OBJ_TEXT,0,anchor,price);
+   ObjectMove(0,label,0,anchor,price);ObjectSetString(0,label,OBJPROP_TEXT,text);
+   ObjectSetString(0,label,OBJPROP_TOOLTIP,tooltip);ObjectSetInteger(0,label,OBJPROP_COLOR,col);
+   ObjectSetInteger(0,label,OBJPROP_FONTSIZE,9);ObjectSetInteger(0,label,OBJPROP_SELECTABLE,false);
+   ObjectSetInteger(0,label,OBJPROP_ANCHOR,strategy==SB_4H?ANCHOR_RIGHT_LOWER:ANCHOR_RIGHT_UPPER);
   }
 void SBMarker(int strategy,string id,datetime stamp,double price,color col)
   {

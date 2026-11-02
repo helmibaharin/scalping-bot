@@ -73,7 +73,6 @@ void SBRun()
   {
    if(!sb_started)return;
    datetime now=TimeCurrent();
-   if(InpEnableVolumeProfile)SBVPDrawProfile();
    if(now==sb_last_run && !sb_fill_pending)return;
    int mutex=SBAccountMutex();if(mutex==INVALID_HANDLE)return;
    sb_last_run=now;sb_fill_pending=false;
@@ -116,6 +115,8 @@ void SBRun()
    if(why!="" && why!=sb_last_warning){SBEvent(SB_4H,"WAIT",why);sb_last_warning=why;}
    if(ready && why=="")sb_last_warning="";
    SBPanel();FileClose(mutex);
+   // Cosmetic work follows entry decisions and never holds the account mutex.
+   if(InpEnableVolumeProfile)SBVPDrawProfile();
   }
 int OnInit()
   {
@@ -160,7 +161,17 @@ int OnInit()
    sb_started=true;SBRun();return INIT_SUCCEEDED;
   }
 void OnChartEvent(const int id,const long &lparam,const double &dparam,const string &sparam)
-  {if(id==CHARTEVENT_CHART_CHANGE && sb_started && InpEnableVolumeProfile)SBVPDrawProfile(true);}
+  {
+   // Object changes/redraws can themselves enqueue chart-change events. Use the
+   // normal throttle/presence check instead of recursively forcing another redraw.
+   if(id==CHARTEVENT_CHART_CHANGE && sb_started && InpEnableVolumeProfile)
+     {
+      // Restore deleted objects immediately, but a successful redraw must not
+      // trigger another forced redraw. Failure clears drawn, stopping retries here.
+      bool repair=sb_vp_drawn!="" && !SBVPObjectsPresent();
+      SBVPDrawProfile(repair);
+     }
+  }
 void OnTick(){SBRun();}
 void OnTimer(){SBRun();}
 void OnDeinit(const int reason)

@@ -44,7 +44,11 @@ foreach($source in $sources){
  }
 }
 if($VerifyReleaseSnapshot){
- $buildPath="$root/artifacts/setup-exits-v1/final-build.json"
+ $buildPath="$root/artifacts/shape-drawing-v1/final-build.json"
+ if(!(Test-Path -LiteralPath $buildPath)){$buildPath="$root/artifacts/smt-repair-v1/final-build.json"}
+ if(!(Test-Path -LiteralPath $buildPath)){$buildPath="$root/artifacts/decision-timing-v1/final-build.json"}
+ if(!(Test-Path -LiteralPath $buildPath)){$buildPath="$root/artifacts/shape-timing-v1/final-build.json"}
+ if(!(Test-Path -LiteralPath $buildPath)){$buildPath="$root/artifacts/setup-exits-v1/final-build.json"}
  if(!(Test-Path -LiteralPath $buildPath)){$buildPath="$root/artifacts/range-recovery-v1/final-build.json"}
  if(!(Test-Path -LiteralPath $buildPath)){$buildPath="$root/artifacts/daily-lock-v1/final-build.json"}
  $build=Get-Content $buildPath -Raw | ConvertFrom-Json

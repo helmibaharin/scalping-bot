@@ -8,14 +8,16 @@ SBShapeCandidate sb_shapes[];
 SBORBStructure sb_shape_structure;
 datetime sb_shape_last=0,sb_shape_formation=0,sb_shape_context=0;
 int sb_shape_context_trend=0;
+bool SBShapeTerminal(int phase){return phase==SH_EXECUTED || phase==SH_INVALIDATED || phase==SH_EXPIRED || phase==SH_BLOCKED;}
+#include "ShapeDrawing.mqh"
 void SBShapeTransition(SBShapeCandidate &c,int phase,datetime time,string reason)
   {
    if(c.phase==phase && c.reason==reason)return;c.phase=phase;c.last=time;c.reason=reason;
+   if(SBShapeTerminal(phase))SBShapeEraseDrawing(c.pattern.id);
    SBEvent(SB_TRIANGLE,"SHAPE_STATE",StringFormat("pattern=%s id=%s phase=%s at=%I64d reason=%s liquidity=%s CHoCH=%I64d BOS=%I64d",
     SBShapeSubtype(c.pattern.type),c.pattern.id,SBShapePhaseName(phase),(long)time,reason,SBLiquidityName(c.classification),(long)c.choch,(long)c.bos));
   }
-bool SBShapeTerminal(int phase){return phase==SH_EXECUTED || phase==SH_INVALIDATED || phase==SH_EXPIRED || phase==SH_BLOCKED;}
-bool SBShapeAdd(SBShapePattern &p)
+bool SBShapeAdd(SBShapePattern &p,datetime detected_at=0)
   {
    for(int i=0;i<ArraySize(sb_shapes);i++)
      {
@@ -29,11 +31,14 @@ bool SBShapeAdd(SBShapePattern &p)
    int slot=-1;
    for(int i=0;i<ArraySize(sb_shapes);i++)if(SBShapeTerminal(sb_shapes[i].phase)){slot=i;break;}
    if(slot<0){slot=ArraySize(sb_shapes);if(slot>=InpShapeMaxCandidates)return false;ArrayResize(sb_shapes,slot+1);}
+   SBShapeEraseDrawing(sb_shapes[slot].pattern.id);
    ZeroMemory(sb_shapes[slot]);sb_shapes[slot].pattern=p;
-   SBEvent(SB_TRIANGLE,"PATTERN_DETECTED",p.id+" "+SBShapeSubtype(p.type)+" pivots="+p.pivots);
+   sb_shapes[slot].available=(datetime)MathMax((long)p.known,(long)detected_at);
+   SBEvent(SB_TRIANGLE,"PATTERN_DETECTED",p.id+" "+SBShapeSubtype(p.type)+" pivots="+p.pivots+
+     " pivotKnown="+TimeToString(p.known,TIME_DATE|TIME_SECONDS)+" available="+TimeToString(sb_shapes[slot].available,TIME_DATE|TIME_SECONDS)+
+     " | M15/M5 decisions use completed candles only");
    SBShapeTransition(sb_shapes[slot],SH_WAIT_BREAKOUT,p.known,"CONFIRMED_PIVOTS");
-   if(InpShapeDraw)
-     {SBTrend("SH."+p.id+".upper",p.u1,p.up1,p.u2,p.up2,clrTomato);SBTrend("SH."+p.id+".lower",p.l1,p.lo1,p.l2,p.lo2,clrDodgerBlue);}
+   // Runtime draws current candidates after completing entry evaluations.
    return true;
   }
 void SBShapeLevelAdd(double price,int side,datetime known,datetime time,string source)
@@ -121,5 +126,28 @@ void SBShapeStep(SBShapeCandidate &c,MqlRates &b,MqlRates &previous,SBORBBreak &
      {c.retest=b.time;c.protective=c.direction>0?MathMin(c.protective,b.low):MathMax(c.protective,b.high);return;}
    if(SBContinuation(c.direction,b.open,b.close,line,InpTriangleRequireDirectionalBody,SymbolInfoDouble(_Symbol,SYMBOL_TRADE_TICK_SIZE)))
      {c.protective-=c.direction*InpTriangleStopBufferPoints*_Point;SBShapeTransition(c,SH_CONTINUATION_READY,b.time,"RETEST_SWING_AND_LATER_CONTINUATION");}
+  }
+// Decision at a completed entry candle's CLOSE. A reference first known at this
+// close can confirm a closing breakout, but cannot classify earlier intrabar sweeps.
+void SBShapeDecisionStep(SBShapeCandidate &c,MqlRates &b,MqlRates &previous,SBORBBreak &event,int trend,int seconds)
+  {
+   datetime decision=b.time+seconds,available=(datetime)MathMax((long)c.pattern.known,(long)c.available);
+   if(SBShapeTerminal(c.phase) || decision<available || decision<=c.evaluated_close)return;
+   c.evaluated_close=decision;
+   if(b.time>=available){SBShapeStep(c,b,previous,event,trend,seconds);return;}
+   // Exact simultaneous pivot confirmation/closing breakout only. Late discovery
+   // of an older pattern cannot turn a past excursion into a fresh setup.
+   if(decision!=available || c.pattern.known!=decision || c.phase!=SH_WAIT_BREAKOUT || c.trap>0 ||
+      !InpShapeContinuation || previous.time+seconds!=b.time)return;
+   double upper=SBShapeUpper(c.pattern,decision),lower=SBShapeLower(c.pattern,decision);
+   if(upper<=lower)return;
+   double clearance=InpTriangleBreakoutClearancePoints*_Point;
+   int dir=SBTriangleBreak(previous.close,SBShapeUpper(c.pattern,b.time),SBShapeLower(c.pattern,b.time),b.close,upper,lower,clearance);
+   if(dir==0 || (c.pattern.direction!=0 && dir!=c.pattern.direction) ||
+      MathAbs(b.close-b.open)<c.pattern.atr*InpShapeBreakBodyATR || dir*(b.close-b.open)<=0)return;
+   c.direction=dir;c.breakout=b.time;c.anchor=dir>0?upper:lower;
+   c.sweep.active=true;c.sweep.side=dir;c.sweep.started=b.time;c.sweep.level=c.anchor;
+   c.sweep.extreme=dir>0?b.high:b.low;c.classification=BREAKOUT_HOLDING;
+   SBShapeTransition(c,SH_WAIT_RETEST,decision,"CONFIRMED_AT_CLOSE_BREAKOUT_WAIT_RETEST");
   }
 #endif

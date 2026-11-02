@@ -30,4 +30,6 @@ string SBSMTLocationName(int type)
   {return type==SMT_BSL?"BSL":(type==SMT_SSL?"SSL":(type==SMT_SUPPLY?"SUPPLY":(type==SMT_DEMAND?"DEMAND":(type==SMT_ACCUMULATION?"ACCUMULATION":"DISTRIBUTION"))));}
 string SBSMTTrendName(int trend)
   {return trend==SMT_INSUFFICIENT?"INSUFFICIENT_DATA":(trend==1?"BULLISH":(trend==-1?"BEARISH":"NEUTRAL"));}
+string SBSMTTrendRejectReason(int trend)
+  {return trend==SMT_INSUFFICIENT?"SMT_TREND_INSUFFICIENT_DATA":(trend==SMT_NEUTRAL?"SMT_TREND_NEUTRAL":"SMT_TREND_MISMATCH");}
 #endif

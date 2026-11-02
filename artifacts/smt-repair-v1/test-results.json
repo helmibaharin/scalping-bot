@@ -1,0 +1,134 @@
+{
+  "status": "PASS",
+  "native_assertions": 571,
+  "tester_runs": [
+    {
+      "id": "smt-repair",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "3F7176DE916CDDCC14D23BB21808C9434F9C273C219985058ADA23B3A65FC3BE",
+      "status": "PASS",
+      "checks": 25
+    },
+    {
+      "id": "decision-timing",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "FE2270F90973B0215D5FEDBD8A7E3AEAFA18E479DFE5F27F61AAD897D082506B",
+      "status": "PASS",
+      "checks": 22
+    },
+    {
+      "id": "shape-timing",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "88DB395657F277EBE5F3B63A6B6F560D2CB3ACE4C415767E26A23BCF07354B54",
+      "status": "PASS",
+      "checks": 27
+    },
+    {
+      "id": "shape-regression",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "E1C95309CDAE491F31440A89E5DEDCDAF4307391309ECA5DFD67FD25BB63FFB7",
+      "status": "PASS",
+      "checks": 124
+    },
+    {
+      "id": "orb-regression",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "17D5C32ED60CDB04B1567CBF9BC07C76CEE490F495BC57CE99D1E32BF2BF09ED",
+      "status": "PASS",
+      "checks": 100
+    },
+    {
+      "id": "smt-regression",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "8BB4AF5D62B5AE8BDCB1FF38F70B9C48F52885804EB326217EAD021240C607A6",
+      "status": "PASS",
+      "checks": 107
+    },
+    {
+      "id": "vp-regression",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "6A1B1BC223F40414B17D4B150AA4E2727CB2284FE2C204EB803C6B93AA666E9A",
+      "status": "PASS",
+      "checks": 88
+    },
+    {
+      "id": "session-regression",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "6FB8EB1D4E8BC84AC67A82FB5BFA402DC8A6B9683392AE8E6BC66984201318C5",
+      "status": "PASS",
+      "checks": 78
+    },
+    {
+      "id": "all-five-continuous",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "50308AE46E188B75FB184431549FBA40102A61300EB4C6DB924400A6A9E63649",
+      "status": "PASS"
+    }
+  ],
+  "limitations": "Historical M1 OHLC and mocked broker send checks do not measure live broker latency or guarantee fills.",
+  "live_read_only_history": [
+    {
+      "timeframe": "PERIOD_D1",
+      "load_ok": true,
+      "raw_trend": "NEUTRAL",
+      "highs": 4,
+      "lows": 9,
+      "resets": 3,
+      "returned_trend": "NEUTRAL"
+    },
+    {
+      "timeframe": "PERIOD_H4",
+      "load_ok": true,
+      "raw_trend": "BULLISH",
+      "highs": 36,
+      "lows": 37,
+      "resets": 0,
+      "returned_trend": "BULLISH"
+    },
+    {
+      "timeframe": "PERIOD_H1",
+      "load_ok": true,
+      "raw_trend": "NEUTRAL",
+      "highs": 2,
+      "lows": 2,
+      "resets": 8,
+      "returned_trend": "NEUTRAL"
+    },
+    {
+      "timeframe": "PERIOD_M15",
+      "load_ok": true,
+      "raw_trend": "NEUTRAL",
+      "highs": 12,
+      "lows": 8,
+      "resets": 1,
+      "returned_trend": "NEUTRAL"
+    }
+  ]
+}

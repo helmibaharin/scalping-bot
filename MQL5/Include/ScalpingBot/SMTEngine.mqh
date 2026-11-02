@@ -123,7 +123,7 @@ void SBSMTStep(SBSMTCandidate &c,SBORBBreak &event,MqlRates &bars[],int end,int 
    if(!location_alive){c.phase=SMT_INVALIDATED;c.reason="SMT_LOCATION_INVALIDATED";return;}
    c.trend=trend;c.context=context;
    if(!SBSMTTrendAllows(dir,trend,InpSMTTrendMode,InpSMTAllowNeutralTrend) || (InpSMTRequireContextAlignment && context!=dir))
-     {c.phase=SMT_INVALIDATED;c.reason=(trend==SMT_NEUTRAL || trend==SMT_INSUFFICIENT)?"SMT_TREND_NEUTRAL":"SMT_TREND_MISMATCH";return;}
+     {c.phase=SMT_INVALIDATED;c.reason=SBSMTTrendRejectReason(trend);return;}
    if(c.atr<=0 || MathAbs(b.close-(dir>0?c.trap.lower:c.trap.upper))>InpSMTMaxEntryExtensionATR*c.atr)
      {c.phase=SMT_INVALIDATED;c.reason="SMT_ENTRY_TOO_EXTENDED";return;}
    if(InpSMTUseFVGValidation)

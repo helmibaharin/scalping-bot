@@ -69,28 +69,32 @@ void SBSMTFinish(SBSMTCandidate &c,MqlRates &b,bool actionable)
    c.reason=sb_execution_result<0?"SMT_ACCOUNT_RISK_BLOCKED "+sb_execution_reason:(sb_execution_result==1?"SMT_SIGNAL_ONLY":"SMT_ORDER_ACCEPTED");
    SBSMTLog(c,b.time+SBSignalSeconds(SB_SMT));
   }
-void SBSMTCheckTrap(datetime decision)
+// false means required history is pending: retain the entry cursor and retry
+// this exact snapshot before advancing structure. Historical signals remain retired.
+bool SBSMTCheckTrap(datetime decision)
   {
    MqlRates traps[];int seconds=PeriodSeconds(InpSMTTrapTF);
    if(!SBSMTLoad(InpSMTTrapTF,decision,MathMax(InpSMTATRPeriod+10,InpSMTMaxPatternAgeBars+InpSMTReentryMaxBars+5),traps))
-     {SBSMTWait("SMT_TRAP_HISTORY_PENDING");return;}
+     {SBSMTWait("SMT_TRAP_HISTORY_PENDING");return false;}
    int end=ArraySize(traps)-1;
-   if(traps[end].time<=sb_smt.last_trap)return;
+   if(traps[end].time<=sb_smt.last_trap)return true;
+   if(SBSMTActive(sb_smt.candidate) || traps[end].time+seconds<=decision-SBSignalSeconds(SB_SMT))
+     {sb_smt.last_trap=traps[end].time;return true;}
+   if(!SBSMTContext(traps[end].time,true)){SBSMTWait("SMT_ZONE_HISTORY_PENDING");return false;}
    sb_smt.last_trap=traps[end].time;
-   if(SBSMTActive(sb_smt.candidate) || traps[end].time+seconds<=decision-SBSignalSeconds(SB_SMT))return;
-   if(!SBSMTContext(traps[end].time,true)){SBSMTWait("SMT_ZONE_HISTORY_PENDING");return;}
    SBSMTDrawContext(traps[end].time);
    SBSMTTrap trap={};
-   if(!SBSMTDetectTrap(traps,end,seconds,sb_smt_locations,trap)){SBSMTWait("SMT_TRAP_NOT_CONFIRMED");return;}
+   if(!SBSMTDetectTrap(traps,end,seconds,sb_smt_locations,trap)){SBSMTWait("SMT_TRAP_NOT_CONFIRMED");return true;}
    if(!SBSMTTrendAllows(trap.direction,sb_smt.trend,InpSMTTrendMode,InpSMTAllowNeutralTrend))
-     {SBSMTRejectTrap(trap,sb_smt.trend==0 || sb_smt.trend==SMT_INSUFFICIENT?"SMT_TREND_NEUTRAL":"SMT_TREND_MISMATCH");return;}
-   if(InpSMTRequireContextAlignment && sb_smt.context!=trap.direction){SBSMTRejectTrap(trap,"SMT_CONTEXT_MISMATCH");return;}
+     {SBSMTRejectTrap(trap,SBSMTTrendRejectReason(sb_smt.trend));return true;}
+   if(InpSMTRequireContextAlignment && sb_smt.context!=trap.direction){SBSMTRejectTrap(trap,"SMT_CONTEXT_MISMATCH");return true;}
    SBSMTLocation location={};
-   if(!SBSMTMatchLocation(trap,sb_smt_locations,location)){SBSMTRejectTrap(trap,"SMT_NO_VALID_LOCATION");return;}
-   if(SBConsumed(SB_SMT,trap.id) || GlobalVariableCheck(SBSMTSharedTrapKey(trap))){SBSMTWait("SMT_DUPLICATE_RETIRED");return;}
+   if(!SBSMTMatchLocation(trap,sb_smt_locations,location)){SBSMTRejectTrap(trap,"SMT_NO_VALID_LOCATION");return true;}
+   if(SBConsumed(SB_SMT,trap.id) || GlobalVariableCheck(SBSMTSharedTrapKey(trap))){SBSMTWait("SMT_DUPLICATE_RETIRED");return true;}
    double atr=SBSMTATR(traps,end,InpSMTATRPeriod);
    SBSMTStart(sb_smt.candidate,trap,location,sb_smt.trend,sb_smt.context,sb_smt.structure.trend,atr);
    sb_smt_wait="";SBSMTLog(sb_smt.candidate,trap.known);SBSMTDrawCandidate(sb_smt.candidate);
+   return true;
   }
 void SBEvaluateSMT(bool startup)
   {
@@ -109,7 +113,7 @@ void SBEvaluateSMT(bool startup)
          ZeroMemory(sb_smt.structure);
         }
       // Trap snapshot is evaluated at this entry candle's OPEN, before processing its close.
-      if(i>=InpSMTATRPeriod+InpSMTPivotLeft+InpSMTPivotRight)SBSMTCheckTrap(b.time);
+      if(i>=InpSMTATRPeriod+InpSMTPivotLeft+InpSMTPivotRight && !SBSMTCheckTrap(b.time))return;
       SBORBBreak event={};SBORBStructureStep(sb_smt.structure,bars,i,InpSMTPivotLeft,InpSMTPivotRight,seconds,InpSMTBOSClearancePoints*_Point,event);
       if(SBSMTActive(sb_smt.candidate))
         {

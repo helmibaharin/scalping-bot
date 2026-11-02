@@ -1,5 +1,6 @@
 #ifndef SB_RISK
 #define SB_RISK
+#include "SessionSchedule.mqh"
 bool SBFreshQuote(MqlTick &q,datetime &utc,string &why)
   {
    if(!SymbolIsSynchronized(_Symbol) || !SymbolInfoTick(_Symbol,q)){why="QUOTE_UNAVAILABLE";return false;}
@@ -22,9 +23,7 @@ bool SBSession(datetime server)
    for(int previous=0;previous<2;previous++)for(uint i=0;i<20;i++)
      {
       datetime a,b;if(!SymbolInfoSessionTrade(_Symbol,(ENUM_DAY_OF_WEEK)((t.day_of_week+7-previous)%7),i,a,b))break;
-      int start=(int)((long)a%86400),end=(int)((long)b%86400);
-      if(previous==0 && (start==end || (start<end && seconds>=start && seconds<end) || (start>end && seconds>=start)))return true;
-      if(previous==1 && start>end && seconds<end)return true;
+      if(SBSessionContains((long)a,(long)b,seconds,previous==1))return true;
      }
    return false;
   }

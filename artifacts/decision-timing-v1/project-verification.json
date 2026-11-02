@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "changed_existing_files": [
+    "MQL5/Experts/ScalpingBot.mq5",
+    "MQL5/Include/ScalpingBot/ShapeRuntime.mqh",
+    "MQL5/Include/ScalpingBot/TradeExecutor.mqh",
+    "tests/test_risk_execution.ps1",
+    "tests/verify_project.ps1",
+    "tests/verify_repository.ps1"
+  ],
+  "preserved_project_files": 102,
+  "protected_capitalguard_files": 36,
+  "defaults_profiles_risk_and_confirmation_engines": "UNCHANGED",
+  "scope": "close-time Shape context, post-decision throttled drawing, after-execution telemetry"
+}

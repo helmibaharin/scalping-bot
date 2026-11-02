@@ -1,0 +1,86 @@
+{
+  "status": "PASS",
+  "native_assertions": 546,
+  "tester_runs": [
+    {
+      "id": "decision-timing",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "309BEDC4945FB0F186BF686C391685DA563CD0DEF4FE46041FF03AF9717C724E",
+      "status": "PASS",
+      "checks": 22
+    },
+    {
+      "id": "shape-timing",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "FAB508FC2008C971B7B5207EAB0649C9E56D4AF34533CC64363569F38318A233",
+      "status": "PASS",
+      "checks": 27
+    },
+    {
+      "id": "shape-regression",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "DBD327359297CB71F9128FCC52FCB2FD88B384D93C5489AF2825524B42CC0DA6",
+      "status": "PASS",
+      "checks": 124
+    },
+    {
+      "id": "orb-regression",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "108C5B0084831AAE7A7B01FCDD27643578A3699DE27069DD7675BC51351EC837",
+      "status": "PASS",
+      "checks": 100
+    },
+    {
+      "id": "smt-regression",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "D86789B6E2AE92487F62969DB9D459FB4B4EFDA58ACEF11A296FB3B35459C7B9",
+      "status": "PASS",
+      "checks": 107
+    },
+    {
+      "id": "vp-regression",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "E9D83A8E01766F7C3211CE10D6A7F32DD110840FE889F15A93F5F63B8A979624",
+      "status": "PASS",
+      "checks": 88
+    },
+    {
+      "id": "session-regression",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "3D38257AD8AB03F52B353B9D5EE95996FA233AFFB75BE747E5B361D1D5126E1D",
+      "status": "PASS",
+      "checks": 78
+    },
+    {
+      "id": "all-five-continuous",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "9CAF51C4265F010959937580A85E1BB8A101B96D887250F9F9C023EA10DCAE4D",
+      "status": "PASS"
+    }
+  ],
+  "limitations": "Historical M1 OHLC and mocked broker send checks do not measure live broker latency or guarantee fills."
+}

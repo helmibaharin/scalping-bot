@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "changed_existing_files": [
+    "MQL5/Include/ScalpingBot/Diagnostics.mqh",
+    "MQL5/Include/ScalpingBot/ShapeEngine.mqh",
+    "MQL5/Include/ScalpingBot/ShapeRuntime.mqh",
+    "tests/verify_project.ps1",
+    "tests/verify_repository.ps1"
+  ],
+  "preserved_project_files": 112,
+  "protected_capitalguard_files": 36,
+  "decision_functions": "IDENTICAL",
+  "profiles_risk_settings_other_strategy_engines": "UNCHANGED",
+  "scope": "owned chart objects only; active finite lines/status and inactive cleanup"
+}

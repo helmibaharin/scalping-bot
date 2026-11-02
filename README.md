@@ -60,7 +60,7 @@ The source-workspace preservation verifier is used when its local snapshots are 
 
 ## Validation and local research
 
-The latest Shape/SMT setup-exit change compiled with zero errors/warnings and passed five native XAUUSD runs: 48 new mode/restart/fill assertions, 124 existing Shape assertions and 107 existing SMT assertions. The 117 risk/execution assertions, 243 rule assertions and 18 Python tests also passed. [Current results and limitations](docs/SETUP_BASED_EXITS.md). Earlier [historical range-recovery results](docs/HISTORICAL_RANGE_RECOVERY.md) and [daily-lock results](artifacts/daily-lock-v1/VALIDATION.md) describe their specific builds. These are engineering checks, not proof of a trading edge.
+The current [Shape chart cleanup](docs/SHAPE_CHART_CLEANUP.md) removes inactive pattern drawings and shows finite, labelled active candidates without changing trading decisions. Current build fingerprints and final receipts are in `artifacts/shape-drawing-v1`. The earlier [SMT repair](docs/SMT_SESSION_REPAIR.md), [all-strategy timing audit](docs/ENTRY_DECISION_TIMING.md), [Shape timing replay](docs/SHAPE_DECISION_TIMING.md), [setup-exit results](docs/SETUP_BASED_EXITS.md), [range-recovery results](docs/HISTORICAL_RANGE_RECOVERY.md) and [daily-lock results](artifacts/daily-lock-v1/VALIDATION.md) describe their specific builds. These are engineering checks, not proof of a trading edge.
 
 Other validation records describe their specific historical builds: [broker mapping](docs/BROKER_TIME_VALIDATION.md), [Volume Profile](docs/VOLUME_PROFILE_VALIDATION.md), [Shape](docs/SHAPE_VALIDATION.md), and [SMT](docs/SMT_VALIDATION.md). Their market samples are short; mixed/generated tick periods and unverified assumptions are disclosed in those reports.
 
@@ -72,7 +72,11 @@ Native tester preparation, replay and release-packaging helpers retain the origi
 - `profiles/`: twelve presets with real-account trading blocked.
 - `tests/`: production-function adapters, native fixtures, offline reporting and local tester/research tools.
 - `docs/`: strategy rules, inputs, installation, validation and limitations.
-- `artifacts/setup-exits-v1/`: compact current validation and build-fingerprint records only.
+- `artifacts/shape-drawing-v1/`: compact current validation and build-fingerprint records only.
+- `artifacts/smt-repair-v1/`: compact validation records for the earlier SMT repair.
+- `artifacts/decision-timing-v1/`: compact validation records for the earlier all-strategy timing audit.
+- `artifacts/shape-timing-v1/`: compact validation records for the earlier Shape timing change.
+- `artifacts/setup-exits-v1/`: compact validation records for the earlier setup-exit change.
 - `artifacts/range-recovery-v1/`: compact validation records for the earlier range-recovery change.
 - `artifacts/daily-lock-v1/`: compact validation records for the earlier daily-lock change.
 

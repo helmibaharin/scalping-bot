@@ -66,13 +66,14 @@ void SBEvaluateShape(bool startup)
          ZeroMemory(sb_shape_structure);
         }
       datetime decision=b.time+seconds;
-      MqlRates formation[];bool data=SBShapeLoad(InpShapeFormationTF,b.time,InpShapeLookback,formation);
+      if(decision>TimeCurrent())break;
+      MqlRates formation[];bool data=SBShapeLoad(InpShapeFormationTF,decision,InpShapeLookback,formation);
       if(!data)
         {for(int j=0;j<ArraySize(sb_shapes);j++)if(!SBShapeTerminal(sb_shapes[j].phase)){SBShapeTransition(sb_shapes[j],SH_INVALIDATED,b.time,"FORMATION_DATA_MISSING");SBConsume(SB_TRIANGLE,sb_shapes[j].pattern.id);}sb_shape_last=b.time;continue;}
       int nf=ArraySize(formation);datetime lastFormation=formation[nf-1].time;
       if(lastFormation>sb_shape_formation)
         {
-         SBShapePattern detected[];SBShapeDetect(formation,nf-1,detected);for(int j=0;j<ArraySize(detected);j++)SBShapeAdd(detected[j]);sb_shape_formation=lastFormation;
+         SBShapePattern detected[];SBShapeDetect(formation,nf-1,detected);for(int j=0;j<ArraySize(detected);j++)SBShapeAdd(detected[j],decision);sb_shape_formation=lastFormation;
          ArrayResize(sb_shape_levels,0);SBShapeCacheLevels(formation,nf-1,PeriodSeconds(InpShapeFormationTF),"FORMATION");SBShapeCopyLevels(sb_shape_formation_levels,sb_shape_levels);
         }
       ArrayResize(sb_shape_levels,0);SBShapeAppendCached(sb_shape_formation_levels,b);
@@ -82,7 +83,8 @@ void SBEvaluateShape(bool startup)
       if(InpShapeUseContext)
         {
          MqlRates context[];
-         if(!SBShapeLoad(InpShapeContextTF,b.time,InpShapeLookback,context))
+         // Context is a close-time filter, so include the HTF candle that just closed.
+         if(!SBShapeLoad(InpShapeContextTF,decision,InpShapeLookback,context))
            {for(int j=0;j<ArraySize(sb_shapes);j++)if(!SBShapeTerminal(sb_shapes[j].phase)){SBShapeTransition(sb_shapes[j],SH_INVALIDATED,b.time,"REQUIRED_CONTEXT_DATA_MISSING");SBConsume(SB_TRIANGLE,sb_shapes[j].pattern.id);}sb_shape_last=b.time;continue;}
          int nc=ArraySize(context);
          if(context[nc-1].time>sb_shape_context)
@@ -97,10 +99,10 @@ void SBEvaluateShape(bool startup)
       for(int j=0;j<ArraySize(sb_shapes);j++)
         {
          if(SBShapeTerminal(sb_shapes[j].phase))continue;
-         SBShapeStep(sb_shapes[j],b,bars[i-1],event,prior,seconds);
+         SBShapeDecisionStep(sb_shapes[j],b,bars[i-1],event,prior,seconds);
+         if(SBShapeTerminal(sb_shapes[j].phase)){SBConsume(SB_TRIANGLE,sb_shapes[j].pattern.id);continue;}
          if(InpShapeDraw && sb_shapes[j].trap>0)
            {SBHLine(SB_TRIANGLE,sb_shapes[j].pattern.id+".sweep",sb_shapes[j].extreme,clrOrange);if(sb_shapes[j].choch>0)SBHLine(SB_TRIANGLE,sb_shapes[j].pattern.id+".CHoCH",sb_shapes[j].choch_level,clrAqua);if(sb_shapes[j].bos>0)SBHLine(SB_TRIANGLE,sb_shapes[j].pattern.id+".BOS",sb_shapes[j].bos_level,clrLimeGreen);}
-         if(SBShapeTerminal(sb_shapes[j].phase)){SBConsume(SB_TRIANGLE,sb_shapes[j].pattern.id);continue;}
          if(sb_shapes[j].phase!=SH_CONTINUATION_READY && sb_shapes[j].phase!=SH_REVERSAL_READY)continue;
          SBSignal signal={};SBShapeMakeSignal(sb_shapes[j],b,signal);
          if(InpShapeDraw)
@@ -113,6 +115,8 @@ void SBEvaluateShape(bool startup)
         }
       sb_shape_last=b.time;
      }
+   // Render once after replay/decisions; no historical drawing backlog before orders.
+   for(int j=0;j<ArraySize(sb_shapes);j++)SBShapeDrawCandidate(sb_shapes[j],sb_shape_last+seconds);
   }
 #endif
 

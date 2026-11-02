@@ -1,5 +1,33 @@
 $ErrorActionPreference='Stop'
 $root=Split-Path $PSScriptRoot -Parent
+if(Test-Path -LiteralPath "$root/artifacts/shape-drawing-v1/before.json"){
+ $env:PYTHONHOME='C:/Program Files/MySQL/MySQL Shell 8.0/lib/Python3.12'
+ & 'C:/Program Files/MySQL/MySQL Workbench 8.0 CE/python.exe' "$PSScriptRoot/verify_shape_drawing.py"
+ if($LASTEXITCODE -ne 0){throw 'Shape drawing preservation gate failed'}
+ & "$PSScriptRoot/verify_repository.ps1"
+ exit 0
+}
+if(Test-Path -LiteralPath "$root/artifacts/smt-repair-v1/before.json"){
+ $env:PYTHONHOME='C:/Program Files/MySQL/MySQL Shell 8.0/lib/Python3.12'
+ & 'C:/Program Files/MySQL/MySQL Workbench 8.0 CE/python.exe' "$PSScriptRoot/verify_smt_repair.py"
+ if($LASTEXITCODE -ne 0){throw 'SMT repair preservation gate failed'}
+ & "$PSScriptRoot/verify_repository.ps1"
+ exit 0
+}
+if(Test-Path -LiteralPath "$root/artifacts/decision-timing-v1/before.json"){
+ $env:PYTHONHOME='C:/Program Files/MySQL/MySQL Shell 8.0/lib/Python3.12'
+ & 'C:/Program Files/MySQL/MySQL Workbench 8.0 CE/python.exe' "$PSScriptRoot/verify_decision_timing.py"
+ if($LASTEXITCODE -ne 0){throw 'Decision timing preservation gate failed'}
+ & "$PSScriptRoot/verify_repository.ps1"
+ exit 0
+}
+if(Test-Path -LiteralPath "$root/artifacts/shape-timing-v1/before.json"){
+ $env:PYTHONHOME='C:/Program Files/MySQL/MySQL Shell 8.0/lib/Python3.12'
+ & 'C:/Program Files/MySQL/MySQL Workbench 8.0 CE/python.exe' "$PSScriptRoot/verify_shape_timing.py"
+ if($LASTEXITCODE -ne 0){throw 'Shape timing preservation gate failed'}
+ & "$PSScriptRoot/verify_repository.ps1"
+ exit 0
+}
 if(Test-Path -LiteralPath "$root/artifacts/setup-exits-v1/before.json"){
  $env:PYTHONHOME='C:/Program Files/MySQL/MySQL Shell 8.0/lib/Python3.12'
  & 'C:/Program Files/MySQL/MySQL Workbench 8.0 CE/python.exe' "$PSScriptRoot/verify_setup_exits.py"

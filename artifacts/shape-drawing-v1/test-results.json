@@ -1,0 +1,46 @@
+{
+  "status": "PASS",
+  "native_assertions": 176,
+  "tester_runs": [
+    {
+      "id": "shape-drawing",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "406DC7760DAA8FB3CC59A0C14D8CD87796B468C3CE89947FE8A18FC2FEE92DC9",
+      "status": "PASS",
+      "checks": 25
+    },
+    {
+      "id": "shape-timing",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "61EE8FC8E31E52D15769DA3DA6A51128EDA77474691A33FCBDD1BAA2F517DCB5",
+      "status": "PASS",
+      "checks": 27
+    },
+    {
+      "id": "shape-regression",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "3DE4307BE2D43B5DFF3D5EC88B2A00C6D9690B146E3C5E4E59931173A7FEF056",
+      "status": "PASS",
+      "checks": 124
+    },
+    {
+      "id": "all-five-continuous",
+      "from": "2026.08.03",
+      "to": "2026.08.04",
+      "mapping_scope": "SYNTHETIC_FIXED_NOT_BROKER_VERIFICATION",
+      "model": "M1_OHLC",
+      "binary_sha256": "98C85F93A410E4E5A73A03BB57113BBA547B63AD375CC145D8556BF5DB19E136",
+      "status": "PASS"
+    }
+  ],
+  "limitations": "Historical M1 OHLC and mocked broker send checks do not measure live broker latency or guarantee fills."
+}

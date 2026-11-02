@@ -8,7 +8,7 @@ struct SBShapePattern
 struct SBShapeCandidate
   {
    SBShapePattern pattern;int phase,direction,classification;string reason;
-   SBSweep sweep;datetime breakout,retest,trap,choch,bos,choch_pivot,last;
+   SBSweep sweep;datetime breakout,retest,trap,choch,bos,choch_pivot,last,available,evaluated_close;
    double extreme,protective,anchor,choch_level,bos_level;bool opposing,continuation_cancelled,trap_seen;
   };
 string SBShapeSubtype(int t)

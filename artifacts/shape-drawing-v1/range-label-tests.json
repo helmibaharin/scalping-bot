@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "native_chart_assertions": 13,
+  "native_normal_chart_tooltip_probe": "PASS",
+  "screenshot_overlap_price": 3919.14,
+  "binary_sha256": "f7eb5e09d26a63d9cfc31d4548793e170a23a95788b6e1e4b99aa564fc5ba1a8",
+  "fixture_sha256": "05e25942d818a51507f07920f4496d937a1f57592661be387c3c43e28e9eae97",
+  "scope": "chart captions only; strategy object IDs, prices and range calculations preserved",
+  "tester_limitation": "Nonvisual Strategy Tester returns empty OBJPROP_TOOLTIP; production tooltip verified on isolated normal chart."
+}
