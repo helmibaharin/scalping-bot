@@ -1,0 +1,10 @@
+{
+  "status": "PASS",
+  "native_checks": 36,
+  "csharp_risk_assertions": 98,
+  "csharp_rule_assertions": 243,
+  "python_tests": 18,
+  "native_orders_sent": 0,
+  "binary_sha256": "585384de920d9ac3b03ea41938ee1bd5197bf79db1d2bf9ccc01d4f8165ae48d",
+  "scope": "Daily lock on/off and persistence checks; does not force signals or certify broker timezone settings."
+}

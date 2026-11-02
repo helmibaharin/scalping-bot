@@ -1,0 +1,23 @@
+# Runtime, market history, account data, staging clones and bulky local research.
+artifacts/*
+# Keep a small, current validation record alongside the published binary.
+!artifacts/daily-lock-v1/
+artifacts/daily-lock-v1/*
+!artifacts/daily-lock-v1/VALIDATION.md
+!artifacts/daily-lock-v1/automated-tests.json
+!artifacts/daily-lock-v1/final-build.json
+!artifacts/daily-lock-v1/project-verification.json
+**/__pycache__/
+*.pyc
+*.compile.log
+*.zip
+# Native fixture binaries are rebuilt locally; distribute only the current EA.
+*.ex5
+!MQL5/Experts/ScalpingBot.ex5
+**/accounts.dat
+**/servers.dat
+**/common.ini
+.env
+.env.*
+.DS_Store
+Thumbs.db

@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "preserved_files": 263,
+  "protected_parent_files": 219,
+  "unchanged_input_defaults": 279,
+  "all_five_profile": "Only daily opt-out added; existing settings preserved",
+  "all_five_schema_inputs": 280
+}

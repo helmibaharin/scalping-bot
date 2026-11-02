@@ -1,0 +1,3 @@
+# Preserve the exact source bytes recorded in native build fingerprints across clones.
+* -text
+*.ex5 binary
